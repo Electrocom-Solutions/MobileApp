@@ -2,6 +2,12 @@
 
 A modern employee management mobile application built with Flutter for both Android and iOS platforms.
 
+## ✅ Latest Update: Gradle Conversion Complete (Kotlin DSL → Groovy)
+
+**All Android build files have been converted from Kotlin DSL to Groovy and Firebase has been fully configured.**
+
+See **`GRADLE_CONVERSION_COMPLETE.md`** for complete details.
+
 ## Features
 
 - **Dark Theme**: Modern, minimal UI/UX with a sleek dark color scheme
