@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "YOUR_PROJECT_NUMBER",
-    "project_id": "your-project-id",
-    "storage_bucket": "your-project-id.appspot.com"
+    "project_number": "1026150671461",
+    "project_id": "electrocom-18a5a",
+    "storage_bucket": "electrocom-18a5a.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:YOUR_PROJECT_NUMBER:android:YOUR_APP_ID",
+        "mobilesdk_app_id": "1:1026150671461:android:3b1e6a1990214b4886928c",
         "android_client_info": {
           "package_name": "com.example.electrocom"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "YOUR_API_KEY_HERE"
+          "current_key": "AIzaSyALVP7892ob6KtOhdVQjACwP-HKIJ3k9W4"
         }
       ],
       "services": {
