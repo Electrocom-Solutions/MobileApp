@@ -5,6 +5,8 @@ import 'config/theme.dart';
 import 'screens/auth/login_screen.dart';
 import 'providers/auth_provider.dart';
 import 'providers/attendance_provider.dart';
+import 'providers/project_provider.dart';
+import 'providers/task_provider.dart';
 
 // Firebase imports
 import 'package:firebase_core/firebase_core.dart';
@@ -45,6 +47,8 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => AttendanceProvider()),
+        ChangeNotifierProvider(create: (_) => ProjectProvider()),
+        ChangeNotifierProvider(create: (_) => TaskProvider()),
       ],
       child: const ElectrocomApp(),
     ),

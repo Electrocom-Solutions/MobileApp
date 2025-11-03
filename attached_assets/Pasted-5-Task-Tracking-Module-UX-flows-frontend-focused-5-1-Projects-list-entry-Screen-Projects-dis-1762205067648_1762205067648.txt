@@ -1,0 +1,72 @@
+5. Task Tracking Module — UX flows (frontend-focused)
+5.1 Projects list (entry)
+Screen: Projects displayed as cards (title, brief, client, project status chip)
+Card contents (reference from website): Project title, client name (subtext), short description, start / end dates, status badge (Planned / In Progress / Completed).
+UI: ListView of Card widgets; each card shows an action to open Project Details.
+Controls: Search bar, Filter chips (All / My Projects / In Progress / Planned / Completed), Sort by Recent.
+5.2 Project detail
+Header: Project title, client, status badge.
+Sections (tabs): Tasks | Resources | Files 
+CTA: Create Task (sticky floating button)
+Edit Project: (admin-only can see this option)
+Fields: Client (dropdown), Project Name, Description, Start Date, End Date, Status.
+5.3 Task list
+Table-like mobile adaptation:
+Each task shown as a compact card with:
+Task Creation Date (e.g., Nov 01, 2025)
+Project title
+Short description (one-line)
+Time taken (e.g., 480 min)
+Status chip (Completed / Approved / In Progress / Pending Approval)
+Resource cost (if available)
+Action icon to view full Task Detail
+Search & Filters: search by project and status filters (All / Pending / Approved / Completed / Rejected).
+5.4 Create Task (form) 
+Open as full-screen route or modal. Fields (based on website):
+Task Name (required)
+Description (multiline)
+Date (DatePicker; default: today)
+Location (auto-detected with option to edit; show reverse-geocoded address and small map preview)
+Time Taken (duration input in minutes with an optional human-readable display like 480 minutes (8.0 hrs))
+Project (select from projects; preselected if opened from within a project)
+Attachments (Photos & Files)
+Horizontal thumbnail stack showing attachments (images and documents) with the following actions on each thumbnail:
+Preview (tap to open full-screen viewer)
+Delete
+Reorder (drag handle)
+Add button opens bottom sheet: Camera / Gallery / Files (use image_picker for images and file_picker for documents).
+Show file size below filename on the attachment chip (e.g., 2.3 MB).
+For images: show a small camera icon overlay; for PDFs show a document icon.
+Resources Used (table-like inline list — mirrors web Task detail table)
+Employees should be able to enter resources used while doing a particular task
+Each row fields:
+Resource Name (autocomplete or text)
+Quantity (number input)
+Unit (text, e.g., pcs, m)
+Unit Cost (numeric input) — optional for field entry; if filled, compute total cost
+Total Cost (computed)
+Remove action (trash)
+Footer: Total Resource Cost (sum of row totals)
+UX: by default a single empty row shown; user can add rows using + Add Resource button.
+Buttons / Actions
+Submit Task
+Validation
+Require: Task Name, Date. For fields like Time Taken, show help text telling users to enter minutes or pick duration.
+If no network: show Save Draft and Submit (Queued) states with clear sync indicators.
+5.5 Task Detail 
+Header: Task title and status badge (e.g., Completed / Pending Review)
+Employee should be able to change status of the task (Draft, ToDo, InProgress, Completed)
+Task Information card: display two-column style stacked vertically on mobile with:
+Date
+Time Taken (show both minutes and human-readable hours)
+Location (address + tap to open map)
+Project
+Description
+Attachments section:
+Thumbnails / file chips showing name and size (e.g., cable_routing_plan.pdf — 1000.0 KB)
+Tap opens file viewer or image preview with swipe left/right to move between attachments.
+Employee should be able to attach attachments (photos, pdf)
+Resources Used section:
+Vertical list showing for each resource: name, quantity + unit, unit cost (if available), total cost, and a trash icon for admins/editors.
+Employee should be able to edit the resources, or add resources.
+At the bottom: Total Resource Cost — bold and prominent.
