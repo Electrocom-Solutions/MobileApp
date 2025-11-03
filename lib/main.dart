@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'config/theme.dart';
 import 'screens/auth/login_screen.dart';
 import 'providers/auth_provider.dart';
+import 'providers/attendance_provider.dart';
 
 // Firebase imports
 import 'package:firebase_core/firebase_core.dart';
@@ -43,6 +44,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => AttendanceProvider()),
       ],
       child: const ElectrocomApp(),
     ),
