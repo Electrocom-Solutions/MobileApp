@@ -13,8 +13,12 @@ dependencies:
   flutter_secure_storage: ^9.0.0
   provider: ^6.0.0
   google_fonts: ^6.0.0
+<<<<<<< HEAD
   firebase_core: ^4.2.1
   firebase_messaging: ^16.0.4
+=======
+  intl: ^0.18.0
+>>>>>>> ae44b1d8baa673d2cb9315f57d94081e1af05f12
 
 dev_dependencies:
   flutter_test:
