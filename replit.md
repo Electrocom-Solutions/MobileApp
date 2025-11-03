@@ -4,9 +4,29 @@
 
 **Electrocom** is a modern employee management mobile application built with Flutter for both Android and iOS platforms. The app features a dark theme and follows modern, minimal UI/UX design principles.
 
+## ⚠️ IMPORTANT: Replit Limitation
+
+**This Flutter mobile app CANNOT run in the Replit environment.** 
+
+Flutter mobile applications require:
+- Flutter SDK (not available in Replit)
+- Android/iOS emulators or physical devices
+- Local development environment
+
+**You MUST download all project files and run them locally** with Flutter SDK installed on your machine. See README.md for complete setup instructions.
+
 ## Current Status
 
 This project contains the **frontend UI implementation only**. All screens are fully designed with placeholder data and ready for backend integration.
+
+**Latest Update (Nov 3, 2025)**: Enhanced Dashboard with:
+- Dynamic greeting (Good Morning/Afternoon/Evening)
+- Current date and location display
+- Today's attendance status (punch in/out)
+- Ongoing tasks count
+- Quick action buttons
+- Recent submissions awaiting review
+- Prominent FloatingActionButton for Punch In/Out
 
 ## Tech Stack
 
