@@ -38,7 +38,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   @override
   void initState() {
     super.initState();
-    _locationController.text = 'Auto-detected location';
+    _locationController.text = '';
     _selectedProjectId = widget.projectId;
     
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -55,7 +55,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
         _nameController.text = task.name;
         _descriptionController.text = task.description;
         _selectedDate = task.date;
-        _locationController.text = task.location ?? 'Auto-detected location';
+        _locationController.text = task.location ?? '';
         _timeTakenController.text = task.timeTakenMinutes.toString();
         _selectedStatus = task.status;
         _selectedProjectId = task.projectId;
