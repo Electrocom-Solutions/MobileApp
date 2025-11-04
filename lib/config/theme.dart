@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  static const Color primaryColor = Color(0xFF6C63FF);
-  static const Color secondaryColor = Color(0xFF03DAC6);
-  static const Color backgroundColor = Color(0xFF121212);
-  static const Color surfaceColor = Color(0xFF1E1E1E);
-  static const Color cardColor = Color(0xFF2C2C2C);
+  // New Professional Black Theme Color Palette
+  static const Color primaryColor = Color(0xFF00BFA6); // Vivid Teal accent
+  static const Color secondaryColor = Color(0xFF2196F3); // Electric Blue
+  static const Color backgroundColor = Color(0xFF000000); // Pure Black
+  static const Color surfaceColor = Color(0xFF0B0B0D); // Dark Gray
+  static const Color cardColor = Color(0xFF0F1113); // Card surface with elevation
   static const Color errorColor = Color(0xFFCF6679);
   static const Color successColor = Color(0xFF4CAF50);
   static const Color warningColor = Color(0xFFFFA726);
@@ -34,7 +35,7 @@ class AppTheme {
         onError: Colors.white,
       ),
       
-      textTheme: GoogleFonts.interTextTheme(
+      textTheme: GoogleFonts.poppinsTextTheme(
         const TextTheme(
           displayLarge: TextStyle(
             fontSize: 32,
@@ -90,10 +91,10 @@ class AppTheme {
       ),
       
       appBarTheme: AppBarTheme(
-        backgroundColor: surfaceColor,
+        backgroundColor: backgroundColor,
         elevation: 0,
-        centerTitle: true,
-        titleTextStyle: GoogleFonts.inter(
+        centerTitle: false,
+        titleTextStyle: GoogleFonts.poppins(
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: textPrimary,
@@ -103,23 +104,24 @@ class AppTheme {
       
       cardTheme: CardThemeData(
         color: cardColor,
-        elevation: 2,
+        elevation: 0,
+        shadowColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
       ),
       
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryColor,
-          foregroundColor: Colors.white,
+          foregroundColor: Colors.black,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: GoogleFonts.inter(
+          textStyle: GoogleFonts.poppins(
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
@@ -129,7 +131,7 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: primaryColor,
-          textStyle: GoogleFonts.inter(
+          textStyle: GoogleFonts.poppins(
             fontSize: 14,
             fontWeight: FontWeight.w600,
           ),

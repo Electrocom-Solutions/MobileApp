@@ -1,0 +1,64 @@
+Redesign Home / Dashboard 
+
+Goal: Redesign the Home (Dashboard) into a professional, modern, black-theme UX that gives a quick, useful overview and clear shortcuts. Keep the app’s default dark/black theme. Make the bottom persistent navigation show icons only (no labels). Deliver Flutter widgets/screens (production-ready), assets, and make sure whole application is working there shouln't be any errors.
+
+Context to reuse (do not change):
+	App default theme: Black theme / dark. (All UIs should have excellent contrast & legible typography on dark backgrounds.) 
+	Primary navigation (persistent bottom): Home, Attendance, Tasks, Notifications, Profile. Only icons — no titles.
+	Dashboard purpose: quick overview and shortcuts (attendance, tasks, quick actions, recent submissions).
+
+
+High-level style & design rules
+	Visual language
+		Minimal, modern, professional. Use plenty of negative space and subtle elevation (soft shadows or glows) for cards.
+		Rounded corners (12–18 px) on cards and buttons.
+		Typography: Use a geometric sans (e.g., Google’s Poppins / Inter). Headline weight medium/semibold, body regular.
+		Accent color: one primary accent (choose a vivid teal or electric blue — e.g., hex #00BFA6 or #2196F3) for CTA and status badges on top of black/dark gray surfaces.
+		Background: pure black #000000 or dark gray #0B0B0D. Card surfaces: slightly lighter #0F1113 with 6–10% white overlay for elevation.
+
+	Spacing & layout
+		Use a 4/8/16 spacing scale.
+		Top safe area → Greeting row → Cards grid/stack → Quick Actions row → Recent / Feed.
+		Keep touch targets >= 44 px.
+
+	Color & accessibility
+		Minimum contrast ratio: 4.5:1 for body text, 3:1 for disabled text.
+		Use subtle translucency for overlays and blur for map/photo previews.
+
+	Micro-interactions
+		Smooth card lifts on tap (scale 0.98 → 1.0).
+		Punch success: Lottie checkmark animation + haptic.
+		Loading states: skeleton cards (shimmer) not spinners.
+
+
+Dashboard layout (structure + spec)
+	Top bar (compact)
+		Left: small avatar (circle) + greeting line: “Good afternoon, Vaibhav” (if name available).
+		Right: small city chip + date (e.g., Tue, 04 Nov) and notification bell (with subtle badge).
+		Microcopy: one line below greeting — “Today • 3 tasks • Punched in at 09:02” (compose dynamically).
+
+	Hero card (wide) — Attendance Snapshot
+		Prominent card spanning width: large circular status (Punched / Not punched), timestamp, small map thumbnail or selfie avatar.
+		Primary CTA: Punch In / Punch Out as a large pill button — make this the most visually prominent element.
+		Secondary CTA: quick “Mark Break” or “Request Correction” small text link.
+
+	Stats row (3 compact cards)
+		Small horizontally scrollable or fixed 3 cards: Ongoing tasks, Pending approvals, Today’s logged hours.
+		Each card: icon, numeric highlight, one-line label. Use accent color for numbers.
+
+	Quick Actions (icon grid / segmented)
+		4 action buttons in a 2x2 grid or horizontal chips: Create Task, Start Shift, Scan Document, Report Issue.
+		Use circular icon buttons with subtle backdrop and brief label underneath (small). Add ripple + short elevation.
+
+	Recent items / Activity feed
+		Vertical list showing the 3–5 most recent items: submitted tasks awaiting review, last punches, announcements.
+		Each row: left small avatar/icon, title, microcopy (who, when), right small action (chevron / accept button).
+
+	Optional: Project status carousel
+		Horizontal cards showing top 3 projects (name, progress bar, deadline). Tap to open project.
+
+	Floating Action Button
+		A single FAB anchored bottom-right for the primary flow (Punch In / Create Task — choose context aware). If FAB is used for Punch, label tooltip on long press. Make FAB circular, slightly elevated with accent color and subtle glow.
+
+	Empty state
+		Friendly illustration with short copy and CTA (e.g., “No recent updates — create your first task”). Use Lottie or simple vector.
