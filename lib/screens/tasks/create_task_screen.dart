@@ -1,53 +1,685 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:uuid/uuid.dart';
 import '../../config/theme.dart';
+import '../../models/task.dart';
+import '../../providers/task_provider.dart';
+import '../../providers/project_provider.dart';
 
 class CreateTaskScreen extends StatefulWidget {
   final String? projectId;
+  final String? taskId;
   
-  const CreateTaskScreen({super.key, this.projectId});
+  const CreateTaskScreen({super.key, this.projectId, this.taskId});
 
   @override
   State<CreateTaskScreen> createState() => _CreateTaskScreenState();
 }
 
 class _CreateTaskScreenState extends State<CreateTaskScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _locationController = TextEditingController();
+  final _timeTakenController = TextEditingController();
+  
+  DateTime _selectedDate = DateTime.now();
+  TaskStatus _selectedStatus = TaskStatus.draft;
+  List<TaskAttachment> _attachments = [];
+  List<ResourceUsed> _resources = [ResourceUsed(id: const Uuid().v4(), name: '', quantity: 0, unit: 'pcs')];
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _locationController.text = 'Auto-detected location';
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _locationController.dispose();
+    _timeTakenController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final project = Provider.of<ProjectProvider>(context).getProjectById(widget.projectId ?? '');
+    
     return Scaffold(
-      backgroundColor: AppTheme.darkBackground,
+      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
-        title: const Text('Create Task'),
-        backgroundColor: AppTheme.darkSurface,
+        title: Text(widget.taskId != null ? 'Edit Task' : 'Create Task'),
+        backgroundColor: AppTheme.backgroundColor,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      body: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSectionTitle('Task Information'),
+              const SizedBox(height: 16),
+              _buildTaskNameField(),
+              const SizedBox(height: 16),
+              _buildDescriptionField(),
+              const SizedBox(height: 16),
+              _buildDatePicker(),
+              const SizedBox(height: 16),
+              _buildLocationField(),
+              const SizedBox(height: 16),
+              _buildTimeTakenField(),
+              const SizedBox(height: 16),
+              _buildProjectField(project?.title ?? 'No Project'),
+              const SizedBox(height: 32),
+              
+              _buildSectionTitle('Attachments'),
+              const SizedBox(height: 16),
+              _buildAttachmentsSection(),
+              const SizedBox(height: 32),
+              
+              _buildSectionTitle('Resources Used'),
+              const SizedBox(height: 16),
+              _buildResourcesSection(),
+              const SizedBox(height: 32),
+              
+              _buildSaveButton(),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: const TextStyle(
+        color: AppTheme.textPrimary,
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  Widget _buildTaskNameField() {
+    return TextFormField(
+      controller: _nameController,
+      style: const TextStyle(color: AppTheme.textPrimary),
+      decoration: InputDecoration(
+        labelText: 'Task Name *',
+        labelStyle: const TextStyle(color: AppTheme.textSecondary),
+        filled: true,
+        fillColor: AppTheme.cardColor,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: AppTheme.primaryColor.withOpacity(0.3)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
+        ),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter task name';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildDescriptionField() {
+    return TextFormField(
+      controller: _descriptionController,
+      style: const TextStyle(color: AppTheme.textPrimary),
+      maxLines: 4,
+      decoration: InputDecoration(
+        labelText: 'Description',
+        labelStyle: const TextStyle(color: AppTheme.textSecondary),
+        filled: true,
+        fillColor: AppTheme.cardColor,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: AppTheme.primaryColor.withOpacity(0.3)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDatePicker() {
+    return InkWell(
+      onTap: () async {
+        final date = await showDatePicker(
+          context: context,
+          initialDate: _selectedDate,
+          firstDate: DateTime(2020),
+          lastDate: DateTime(2030),
+          builder: (context, child) {
+            return Theme(
+              data: ThemeData.dark().copyWith(
+                colorScheme: const ColorScheme.dark(
+                  primary: AppTheme.primaryColor,
+                  surface: AppTheme.cardColor,
+                ),
+              ),
+              child: child!,
+            );
+          },
+        );
+        if (date != null) {
+          setState(() => _selectedDate = date);
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppTheme.cardColor,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppTheme.primaryColor.withOpacity(0.3)),
+        ),
+        child: Row(
           children: [
-            Icon(
-              Icons.construction,
-              size: 64,
-              color: AppTheme.primaryPurple,
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Create Task Feature',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Coming soon...',
-              style: TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 14,
-              ),
+            const Icon(Icons.calendar_today, color: AppTheme.primaryColor),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Date',
+                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  DateFormat('EEEE, MMMM d, y').format(_selectedDate),
+                  style: const TextStyle(color: AppTheme.textPrimary, fontSize: 16),
+                ),
+              ],
             ),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildLocationField() {
+    return TextFormField(
+      controller: _locationController,
+      style: const TextStyle(color: AppTheme.textPrimary),
+      decoration: InputDecoration(
+        labelText: 'Location',
+        labelStyle: const TextStyle(color: AppTheme.textSecondary),
+        filled: true,
+        fillColor: AppTheme.cardColor,
+        prefixIcon: const Icon(Icons.location_on, color: AppTheme.primaryColor),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: AppTheme.primaryColor.withOpacity(0.3)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTimeTakenField() {
+    return TextFormField(
+      controller: _timeTakenController,
+      style: const TextStyle(color: AppTheme.textPrimary),
+      keyboardType: TextInputType.number,
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      decoration: InputDecoration(
+        labelText: 'Time Taken (minutes)',
+        labelStyle: const TextStyle(color: AppTheme.textSecondary),
+        filled: true,
+        fillColor: AppTheme.cardColor,
+        prefixIcon: const Icon(Icons.timer, color: AppTheme.primaryColor),
+        suffixText: _timeTakenController.text.isNotEmpty 
+            ? '(${(int.tryParse(_timeTakenController.text) ?? 0) / 60} hrs)'
+            : '',
+        suffixStyle: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: AppTheme.primaryColor.withOpacity(0.3)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
+        ),
+      ),
+      onChanged: (value) => setState(() {}),
+    );
+  }
+
+  Widget _buildProjectField(String projectName) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.cardColor.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppTheme.textSecondary.withOpacity(0.3)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.folder, color: AppTheme.textSecondary),
+          const SizedBox(width: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Project (Read-only)',
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                projectName,
+                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 16),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAttachmentsSection() {
+    return Column(
+      children: [
+        if (_attachments.isNotEmpty)
+          Container(
+            height: 120,
+            margin: const EdgeInsets.only(bottom: 16),
+            child: ReorderableListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: _attachments.length,
+              onReorder: (oldIndex, newIndex) {
+                setState(() {
+                  if (newIndex > oldIndex) newIndex--;
+                  final item = _attachments.removeAt(oldIndex);
+                  _attachments.insert(newIndex, item);
+                });
+              },
+              itemBuilder: (context, index) {
+                return _buildAttachmentCard(_attachments[index], index);
+              },
+            ),
+          ),
+        Row(
+          children: [
+            Expanded(
+              child: _buildAttachmentButton(
+                icon: Icons.camera_alt,
+                label: 'Camera',
+                onTap: () => _pickImage(ImageSource.camera),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildAttachmentButton(
+                icon: Icons.photo_library,
+                label: 'Gallery',
+                onTap: () => _pickImage(ImageSource.gallery),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildAttachmentButton(
+                icon: Icons.attach_file,
+                label: 'Files',
+                onTap: _pickFile,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAttachmentButton({required IconData icon, required String label, required VoidCallback onTap}) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: AppTheme.cardColor,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppTheme.primaryColor.withOpacity(0.3)),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: AppTheme.primaryColor, size: 28),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: const TextStyle(color: AppTheme.textPrimary, fontSize: 12),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAttachmentCard(TaskAttachment attachment, int index) {
+    return Container(
+      key: ValueKey(attachment.id),
+      width: 100,
+      margin: const EdgeInsets.only(right: 12),
+      decoration: BoxDecoration(
+        color: AppTheme.cardColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppTheme.primaryColor.withOpacity(0.3)),
+      ),
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: attachment.type == AttachmentType.image
+                ? Image.file(
+                    File(attachment.filePath),
+                    width: 100,
+                    height: 120,
+                    fit: BoxFit.cover,
+                  )
+                : Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.picture_as_pdf, color: AppTheme.errorColor, size: 40),
+                        const SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Text(
+                            attachment.fileName,
+                            style: const TextStyle(color: AppTheme.textPrimary, fontSize: 10),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        Text(
+                          attachment.fileSizeFormatted,
+                          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 9),
+                        ),
+                      ],
+                    ),
+                  ),
+          ),
+          Positioned(
+            top: 4,
+            right: 4,
+            child: GestureDetector(
+              onTap: () {
+                setState(() => _attachments.removeAt(index));
+              },
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: const BoxDecoration(
+                  color: AppTheme.errorColor,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.close, color: Colors.white, size: 16),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResourcesSection() {
+    double totalCost = _resources.fold(0, (sum, r) => sum + (r.unitCost ?? 0) * r.quantity);
+    
+    return Column(
+      children: [
+        ..._resources.asMap().entries.map((entry) {
+          int index = entry.key;
+          return _buildResourceRow(index);
+        }).toList(),
+        const SizedBox(height: 12),
+        OutlinedButton.icon(
+          onPressed: () {
+            setState(() {
+              _resources.add(ResourceUsed(
+                id: const Uuid().v4(),
+                name: '',
+                quantity: 0,
+                unit: 'pcs',
+              ));
+            });
+          },
+          icon: const Icon(Icons.add, color: AppTheme.primaryColor),
+          label: const Text('Add Resource', style: TextStyle(color: AppTheme.primaryColor)),
+          style: OutlinedButton.styleFrom(
+            side: const BorderSide(color: AppTheme.primaryColor),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppTheme.primaryColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppTheme.primaryColor.withOpacity(0.3)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Total Resource Cost',
+                style: TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                '\$${totalCost.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  color: AppTheme.primaryColor,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildResourceRow(int index) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppTheme.cardColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppTheme.primaryColor.withOpacity(0.2)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 3,
+            child: TextFormField(
+              initialValue: _resources[index].name,
+              style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+              decoration: const InputDecoration(
+                hintText: 'Resource name',
+                hintStyle: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                isDense: true,
+                border: InputBorder.none,
+              ),
+              onChanged: (value) {
+                _resources[index] = ResourceUsed(
+                  id: _resources[index].id,
+                  name: value,
+                  quantity: _resources[index].quantity,
+                  unit: _resources[index].unit,
+                  unitCost: _resources[index].unitCost,
+                );
+                setState(() {});
+              },
+            ),
+          ),
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 60,
+            child: TextFormField(
+              initialValue: _resources[index].quantity > 0 ? _resources[index].quantity.toString() : '',
+              style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                hintText: 'Qty',
+                hintStyle: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                isDense: true,
+                border: InputBorder.none,
+              ),
+              onChanged: (value) {
+                _resources[index] = ResourceUsed(
+                  id: _resources[index].id,
+                  name: _resources[index].name,
+                  quantity: double.tryParse(value) ?? 0,
+                  unit: _resources[index].unit,
+                  unitCost: _resources[index].unitCost,
+                );
+                setState(() {});
+              },
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete, color: AppTheme.errorColor, size: 20),
+            onPressed: () {
+              if (_resources.length > 1) {
+                setState(() => _resources.removeAt(index));
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSaveButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: _isLoading ? null : _saveTask,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppTheme.primaryColor,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        child: _isLoading
+            ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+              )
+            : const Text(
+                'Save Task',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+      ),
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: source);
+    
+    if (image != null) {
+      final file = File(image.path);
+      final fileSize = await file.length();
+      
+      setState(() {
+        _attachments.add(TaskAttachment(
+          id: const Uuid().v4(),
+          fileName: image.name,
+          filePath: image.path,
+          type: AttachmentType.image,
+          fileSize: fileSize,
+          isUploaded: true,
+        ));
+      });
+    }
+  }
+
+  Future<void> _pickFile() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'doc', 'docx', 'txt'],
+    );
+    
+    if (result != null) {
+      final file = result.files.first;
+      setState(() {
+        _attachments.add(TaskAttachment(
+          id: const Uuid().v4(),
+          fileName: file.name,
+          filePath: file.path!,
+          type: file.extension == 'pdf' ? AttachmentType.pdf : AttachmentType.other,
+          fileSize: file.size,
+          isUploaded: true,
+        ));
+      });
+    }
+  }
+
+  void _saveTask() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() => _isLoading = true);
+      
+      await Future.delayed(const Duration(seconds: 1));
+      
+      if (mounted) {
+        HapticFeedback.mediumImpact();
+        Navigator.pop(context, true);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Task saved successfully ✅'),
+            backgroundColor: AppTheme.successColor,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
+    }
   }
 }

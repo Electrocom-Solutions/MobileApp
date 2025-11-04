@@ -46,14 +46,14 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
     }
 
     return Scaffold(
-      backgroundColor: AppTheme.darkBackground,
+      backgroundColor: AppTheme.backgroundColor,
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
             SliverAppBar(
               expandedHeight: 200,
               pinned: true,
-              backgroundColor: AppTheme.darkSurface,
+              backgroundColor: AppTheme.cardColor,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () => Navigator.pop(context),
@@ -65,8 +65,8 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        AppTheme.primaryPurple.withOpacity(0.3),
-                        AppTheme.darkSurface,
+                        AppTheme.primaryColor.withOpacity(0.3),
+                        AppTheme.cardColor,
                       ],
                     ),
                   ),
@@ -120,8 +120,8 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
               ),
               bottom: TabBar(
                 controller: _tabController,
-                indicatorColor: AppTheme.primaryPurple,
-                labelColor: AppTheme.primaryPurple,
+                indicatorColor: AppTheme.primaryColor,
+                labelColor: AppTheme.primaryColor,
                 unselectedLabelColor: AppTheme.textSecondary,
                 tabs: const [
                   Tab(text: 'Tasks'),
@@ -150,7 +150,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
             ),
           );
         },
-        backgroundColor: AppTheme.primaryPurple,
+        backgroundColor: AppTheme.primaryColor,
         icon: const Icon(Icons.add, color: Colors.white),
         label: const Text('Create Task', style: TextStyle(color: Colors.white)),
       ),
@@ -171,13 +171,13 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                   width: 100,
                   height: 100,
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryPurple.withOpacity(0.1),
+                    color: AppTheme.primaryColor.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
                     Icons.task_alt,
                     size: 50,
-                    color: AppTheme.primaryPurple,
+                    color: AppTheme.primaryColor,
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -207,7 +207,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
             return Container(
               margin: const EdgeInsets.only(bottom: 12),
               decoration: BoxDecoration(
-                color: AppTheme.darkSurface,
+                color: AppTheme.cardColor,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(

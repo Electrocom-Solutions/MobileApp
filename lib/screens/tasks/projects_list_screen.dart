@@ -38,7 +38,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.darkBackground,
+      backgroundColor: AppTheme.backgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -60,12 +60,12 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppTheme.primaryPurple.withOpacity(0.2),
+              color: AppTheme.primaryColor.withOpacity(0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(
               Icons.folder_special,
-              color: AppTheme.primaryPurple,
+              color: AppTheme.primaryColor,
               size: 28,
             ),
           ),
@@ -100,7 +100,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         decoration: BoxDecoration(
-          color: AppTheme.darkSurface,
+          color: AppTheme.cardColor,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -116,7 +116,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
           decoration: InputDecoration(
             hintText: 'Search projects or clients...',
             hintStyle: TextStyle(color: AppTheme.textSecondary),
-            prefixIcon: const Icon(Icons.search, color: AppTheme.primaryPurple),
+            prefixIcon: const Icon(Icons.search, color: AppTheme.primaryColor),
             suffixIcon: _searchController.text.isNotEmpty
                 ? IconButton(
                     icon: const Icon(Icons.clear, color: AppTheme.textSecondary),
@@ -212,10 +212,10 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? AppTheme.primaryPurple : AppTheme.darkSurface,
+            color: isSelected ? AppTheme.primaryColor : AppTheme.cardColor,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isSelected ? AppTheme.primaryPurple : Colors.transparent,
+              color: isSelected ? AppTheme.primaryColor : Colors.transparent,
               width: 2,
             ),
           ),
@@ -241,8 +241,8 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
         }
 
         return RefreshIndicator(
-          color: AppTheme.primaryPurple,
-          backgroundColor: AppTheme.darkSurface,
+          color: AppTheme.primaryColor,
+          backgroundColor: AppTheme.cardColor,
           onRefresh: () async {
             await Future.delayed(const Duration(seconds: 1));
           },
@@ -277,7 +277,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: AppTheme.darkSurface,
+        color: AppTheme.cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -428,13 +428,13 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
             width: 120,
             height: 120,
             decoration: BoxDecoration(
-              color: AppTheme.primaryPurple.withOpacity(0.1),
+              color: AppTheme.primaryColor.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.folder_open,
               size: 60,
-              color: AppTheme.primaryPurple,
+              color: AppTheme.primaryColor,
             ),
           ),
           const SizedBox(height: 24),
@@ -462,7 +462,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
             icon: const Icon(Icons.refresh),
             label: const Text('Clear Filters'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryPurple,
+              backgroundColor: AppTheme.primaryColor,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(

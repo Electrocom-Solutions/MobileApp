@@ -39,7 +39,7 @@ class _TasksListScreenState extends State<TasksListScreen> with SingleTickerProv
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.darkBackground,
+      backgroundColor: AppTheme.backgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -57,7 +57,7 @@ class _TasksListScreenState extends State<TasksListScreen> with SingleTickerProv
             MaterialPageRoute(builder: (context) => const CreateTaskScreen()),
           );
         },
-        backgroundColor: AppTheme.primaryPurple,
+        backgroundColor: AppTheme.primaryColor,
         icon: const Icon(Icons.add, color: Colors.white),
         label: const Text('New Task', style: TextStyle(color: Colors.white)),
       ),
@@ -72,12 +72,12 @@ class _TasksListScreenState extends State<TasksListScreen> with SingleTickerProv
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppTheme.primaryPurple.withOpacity(0.2),
+              color: AppTheme.primaryColor.withOpacity(0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(
               Icons.task_alt,
-              color: AppTheme.primaryPurple,
+              color: AppTheme.primaryColor,
               size: 28,
             ),
           ),
@@ -112,7 +112,7 @@ class _TasksListScreenState extends State<TasksListScreen> with SingleTickerProv
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         decoration: BoxDecoration(
-          color: AppTheme.darkSurface,
+          color: AppTheme.cardColor,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -128,7 +128,7 @@ class _TasksListScreenState extends State<TasksListScreen> with SingleTickerProv
           decoration: InputDecoration(
             hintText: 'Search tasks...',
             hintStyle: TextStyle(color: AppTheme.textSecondary),
-            prefixIcon: const Icon(Icons.search, color: AppTheme.primaryPurple),
+            prefixIcon: const Icon(Icons.search, color: AppTheme.primaryColor),
             suffixIcon: _searchController.text.isNotEmpty
                 ? IconButton(
                     icon: const Icon(Icons.clear, color: AppTheme.textSecondary),
@@ -210,10 +210,10 @@ class _TasksListScreenState extends State<TasksListScreen> with SingleTickerProv
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? AppTheme.primaryPurple : AppTheme.darkSurface,
+            color: isSelected ? AppTheme.primaryColor : AppTheme.cardColor,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isSelected ? AppTheme.primaryPurple : Colors.transparent,
+              color: isSelected ? AppTheme.primaryColor : Colors.transparent,
               width: 2,
             ),
           ),
@@ -239,8 +239,8 @@ class _TasksListScreenState extends State<TasksListScreen> with SingleTickerProv
         }
 
         return RefreshIndicator(
-          color: AppTheme.primaryPurple,
-          backgroundColor: AppTheme.darkSurface,
+          color: AppTheme.primaryColor,
+          backgroundColor: AppTheme.cardColor,
           onRefresh: () async {
             await Future.delayed(const Duration(seconds: 1));
           },
@@ -272,7 +272,7 @@ class _TasksListScreenState extends State<TasksListScreen> with SingleTickerProv
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: AppTheme.darkSurface,
+        color: AppTheme.cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -340,7 +340,7 @@ class _TasksListScreenState extends State<TasksListScreen> with SingleTickerProv
                 Text(
                   task.projectTitle,
                   style: TextStyle(
-                    color: AppTheme.primaryPurple,
+                    color: AppTheme.primaryColor,
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                   ),
@@ -392,13 +392,13 @@ class _TasksListScreenState extends State<TasksListScreen> with SingleTickerProv
             width: 120,
             height: 120,
             decoration: BoxDecoration(
-              color: AppTheme.primaryPurple.withOpacity(0.1),
+              color: AppTheme.primaryColor.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.task_outlined,
               size: 60,
-              color: AppTheme.primaryPurple,
+              color: AppTheme.primaryColor,
             ),
           ),
           const SizedBox(height: 24),
@@ -429,7 +429,7 @@ class _TasksListScreenState extends State<TasksListScreen> with SingleTickerProv
             icon: const Icon(Icons.add),
             label: const Text('Create Task'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryPurple,
+              backgroundColor: AppTheme.primaryColor,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(
