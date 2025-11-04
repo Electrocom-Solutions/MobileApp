@@ -168,6 +168,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
   Widget _buildStatusChip(TaskStatus status) {
     final isSelected = _selectedStatus == status;
+    final cardColor = Theme.of(context).cardTheme.color ?? Theme.of(context).cardColor;
+    final unselectedColor = Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey;
     
     return GestureDetector(
       onTap: () async {
@@ -181,17 +183,17 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? _getStatusColor(status).withOpacity(0.2) : AppTheme.cardColor,
+          color: isSelected ? _getStatusColor(status).withOpacity(0.2) : cardColor,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isSelected ? _getStatusColor(status) : AppTheme.textSecondary.withOpacity(0.3),
+            color: isSelected ? _getStatusColor(status) : unselectedColor.withOpacity(0.3),
             width: 2,
           ),
         ),
         child: Text(
           _getStatusText(status),
           style: TextStyle(
-            color: isSelected ? _getStatusColor(status) : AppTheme.textSecondary,
+            color: isSelected ? _getStatusColor(status) : unselectedColor,
             fontSize: 13,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
@@ -229,7 +231,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           if (task.location != null) const SizedBox(height: 16),
           _buildInfoRow(Icons.folder, 'Project', task.projectTitle),
           const SizedBox(height: 16),
-          const Divider(color: AppTheme.textHint),
+          Divider(),
           const SizedBox(height: 16),
           const Text(
             'Description',

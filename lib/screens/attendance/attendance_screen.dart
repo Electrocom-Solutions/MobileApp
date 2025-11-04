@@ -56,7 +56,6 @@ class _AttendanceScreenState extends State<AttendanceScreen> with SingleTickerPr
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: AppTheme.primaryColor,
-          labelColor: AppTheme.primaryColor,
           tabs: const [
             Tab(text: 'Calendar View'),
             Tab(text: 'List View'),
