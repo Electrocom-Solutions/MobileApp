@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/theme.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/theme_provider.dart';
 import '../auth/login_screen.dart';
+import 'edit_profile_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -14,8 +16,13 @@ class ProfileScreen extends StatelessWidget {
         title: const Text('Profile'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () {},
+            icon: const Icon(Icons.edit, color: AppTheme.primaryColor),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+              );
+            },
           ),
         ],
       ),
@@ -106,6 +113,42 @@ class ProfileScreen extends StatelessWidget {
                         icon: Icons.work_outline,
                         title: 'Employment Type',
                         value: 'Full Time',
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  
+                  // Theme Switcher Section
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4, bottom: 12),
+                        child: Text(
+                          'Appearance',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                      ),
+                      Card(
+                        child: Consumer<ThemeProvider>(
+                          builder: (context, themeProvider, _) {
+                            return ListTile(
+                              leading: Icon(
+                                themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                                color: AppTheme.primaryColor,
+                              ),
+                              title: const Text('Theme'),
+                              subtitle: Text(themeProvider.isDarkMode ? 'Dark Mode' : 'Light Mode'),
+                              trailing: Switch(
+                                value: themeProvider.isDarkMode,
+                                onChanged: (value) {
+                                  themeProvider.setTheme(value);
+                                },
+                                activeColor: AppTheme.primaryColor,
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ],
                   ),

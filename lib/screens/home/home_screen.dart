@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import '../../config/theme.dart';
 import '../attendance/camera_capture_screen.dart';
+import '../tasks/create_task_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -367,7 +368,12 @@ class _HomeScreenState extends State<HomeScreen> {
     return InkWell(
       onTap: () {
         HapticFeedback.lightImpact();
-        // Navigate to create task screen
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const CreateTaskScreen(),
+          ),
+        );
       },
       borderRadius: BorderRadius.circular(16),
       child: Container(

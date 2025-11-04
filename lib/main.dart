@@ -7,6 +7,7 @@ import 'providers/auth_provider.dart';
 import 'providers/attendance_provider.dart';
 import 'providers/project_provider.dart';
 import 'providers/task_provider.dart';
+import 'providers/theme_provider.dart';
 
 // Firebase imports
 import 'package:firebase_core/firebase_core.dart';
@@ -45,6 +46,7 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => AttendanceProvider()),
         ChangeNotifierProvider(create: (_) => ProjectProvider()),
@@ -60,11 +62,15 @@ class ElectrocomApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Electrocom',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
-      home: const LoginScreen(),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, _) {
+        return MaterialApp(
+          title: 'Electrocom',
+          debugShowCheckedModeBanner: false,
+          theme: themeProvider.isDarkMode ? AppTheme.darkTheme : AppTheme.lightTheme,
+          home: const LoginScreen(),
+        );
+      },
     );
   }
 }

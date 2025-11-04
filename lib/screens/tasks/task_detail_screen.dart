@@ -313,24 +313,13 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Attachments',
-              style: TextStyle(
-                color: AppTheme.textPrimary,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            if (task.status != TaskStatus.completed)
-              TextButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.add, color: AppTheme.primaryColor, size: 18),
-                label: const Text('Add', style: TextStyle(color: AppTheme.primaryColor, fontSize: 13)),
-              ),
-          ],
+        const Text(
+          'Attachments',
+          style: TextStyle(
+            color: AppTheme.textPrimary,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 12),
         if (task.attachments.isEmpty)
@@ -442,24 +431,13 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Resources Used',
-              style: TextStyle(
-                color: AppTheme.textPrimary,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            if (task.status != TaskStatus.completed)
-              TextButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.add, color: AppTheme.primaryColor, size: 18),
-                label: const Text('Add', style: TextStyle(color: AppTheme.primaryColor, fontSize: 13)),
-              ),
-          ],
+        const Text(
+          'Resources Used',
+          style: TextStyle(
+            color: AppTheme.textPrimary,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 12),
         if (task.resources.isEmpty)
@@ -572,13 +550,6 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-          if (status != TaskStatus.completed) ...[
-            const SizedBox(width: 8),
-            IconButton(
-              icon: const Icon(Icons.delete, color: AppTheme.errorColor, size: 20),
-              onPressed: () {},
-            ),
-          ],
         ],
       ),
     );

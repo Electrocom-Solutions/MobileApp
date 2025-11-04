@@ -30,6 +30,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   
   DateTime _selectedDate = DateTime.now();
   TaskStatus _selectedStatus = TaskStatus.draft;
+  String? _selectedProjectId;
   List<TaskAttachment> _attachments = [];
   List<ResourceUsed> _resources = [ResourceUsed(id: const Uuid().v4(), name: '', quantity: 0, unit: 'pcs')];
   bool _isLoading = false;
@@ -38,6 +39,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   void initState() {
     super.initState();
     _locationController.text = 'Auto-detected location';
+    _selectedProjectId = widget.projectId;
     
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.taskId != null) {
@@ -56,6 +58,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
         _locationController.text = task.location ?? 'Auto-detected location';
         _timeTakenController.text = task.timeTakenMinutes.toString();
         _selectedStatus = task.status;
+        _selectedProjectId = task.projectId;
         _attachments = List.from(task.attachments);
         _resources = task.resources.isNotEmpty ? List.from(task.resources) : [ResourceUsed(id: const Uuid().v4(), name: '', quantity: 0, unit: 'pcs')];
       });
@@ -73,8 +76,6 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final project = Provider.of<ProjectProvider>(context).getProjectById(widget.projectId ?? '');
-    
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
@@ -100,7 +101,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
               const SizedBox(height: 16),
               _buildTimeTakenField(),
               const SizedBox(height: 16),
-              _buildProjectField(project?.title ?? 'No Project'),
+              _buildProjectField(),
               const SizedBox(height: 32),
               
               _buildSectionTitle('Attachments'),
@@ -304,34 +305,87 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
     );
   }
 
-  Widget _buildProjectField(String projectName) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.cardColor.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.textSecondary.withOpacity(0.3)),
+  Widget _buildProjectField() {
+    final projectProvider = Provider.of<ProjectProvider>(context);
+    final projects = projectProvider.projects;
+    
+    // If projectId was provided (from project detail), show read-only field
+    if (widget.projectId != null) {
+      final project = projectProvider.getProjectById(widget.projectId!);
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppTheme.cardColor.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppTheme.textSecondary.withOpacity(0.3)),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.folder, color: AppTheme.textSecondary),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Project (Read-only)',
+                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  project?.title ?? 'No Project',
+                  style: const TextStyle(color: AppTheme.textSecondary, fontSize: 16),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
+    
+    // Otherwise show dropdown selector
+    return DropdownButtonFormField<String>(
+      value: _selectedProjectId,
+      decoration: InputDecoration(
+        labelText: 'Select Project *',
+        labelStyle: const TextStyle(color: AppTheme.textSecondary),
+        filled: true,
+        fillColor: AppTheme.cardColor,
+        prefixIcon: const Icon(Icons.folder, color: AppTheme.primaryColor),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: AppTheme.primaryColor.withOpacity(0.3)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
+        ),
       ),
-      child: Row(
-        children: [
-          const Icon(Icons.folder, color: AppTheme.textSecondary),
-          const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Project (Read-only)',
-                style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                projectName,
-                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 16),
-              ),
-            ],
+      dropdownColor: AppTheme.cardColor,
+      style: const TextStyle(color: AppTheme.textPrimary),
+      items: projects.map((project) {
+        return DropdownMenuItem<String>(
+          value: project.id,
+          child: Text(
+            project.title,
+            style: const TextStyle(color: AppTheme.textPrimary),
           ),
-        ],
-      ),
+        );
+      }).toList(),
+      onChanged: (value) {
+        setState(() {
+          _selectedProjectId = value;
+        });
+      },
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please select a project';
+        }
+        return null;
+      },
     );
   }
 
@@ -484,6 +538,38 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
     
     return Column(
       children: [
+        // Column Headers
+        Padding(
+          padding: const EdgeInsets.only(left: 12, right: 12, bottom: 8),
+          child: Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: Text(
+                  'Resource Name',
+                  style: TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              SizedBox(
+                width: 60,
+                child: Text(
+                  'Qty',
+                  style: TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 40),
+            ],
+          ),
+        ),
         ..._resources.asMap().entries.map((entry) {
           int index = entry.key;
           return _buildResourceRow(index);
@@ -690,7 +776,9 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
       
       try {
         final taskProvider = Provider.of<TaskProvider>(context, listen: false);
-        final project = Provider.of<ProjectProvider>(context, listen: false).getProjectById(widget.projectId ?? '');
+        final projectProvider = Provider.of<ProjectProvider>(context, listen: false);
+        final effectiveProjectId = _selectedProjectId ?? widget.projectId ?? '';
+        final project = projectProvider.getProjectById(effectiveProjectId);
         
         final task = Task(
           id: widget.taskId ?? const Uuid().v4(),
@@ -702,7 +790,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
               : DateTime.now(),
           location: _locationController.text.trim(),
           timeTakenMinutes: int.tryParse(_timeTakenController.text) ?? 0,
-          projectId: widget.projectId ?? '',
+          projectId: effectiveProjectId,
           projectTitle: project?.title ?? 'No Project',
           status: _selectedStatus,
           attachments: _attachments,
