@@ -53,10 +53,11 @@ This project contains the **frontend UI implementation only**. All screens are f
   - Personal and Work Information sections
 - **Full Attendance Module**:
   - Camera capture with circular selfie preview and GPS location
-  - Beautiful animated success dialog (removed floating button)
+  - Direct punch-in confirmation (success dialog removed per user request)
   - Calendar View with color-coded status
   - List View with check-in/out times and hours
 - **Enhanced UX**: Haptic feedback, smooth animations, professional visual polish throughout
+- **Profile Image Upload**: Camera/gallery picker for profile picture in Edit Profile screen
 
 ## Tech Stack
 
@@ -220,6 +221,19 @@ lib/
 - Focus on employee management features
 
 ## Recent Changes
+
+- **Nov 4, 2025 (Final Update)**: User-Requested Refinements & Complete Light Theme Polish
+  - **Attendance Flow**: Removed success dialog after punch-in - now directly returns to home with haptic feedback
+  - **Projects Page Light Theme Fix**: 
+    - Fixed heading colors to use theme instead of hard-coded white
+    - Fixed search bar text colors for light theme visibility
+    - Fixed filter chip colors to adapt properly in both dark and light themes
+  - **Create Task Dropdown Fix**: Fixed dropdown text colors in light theme (was white, now uses theme colors)
+  - **Profile Image Picker**: Added camera/gallery picker for profile picture in Edit Profile
+    - Tap profile avatar to open modal with Camera/Gallery/Cancel options
+    - Image preview updates instantly with selected photo
+    - Includes error handling and image optimization (800x800, 85% quality)
+  - **Complete Theme-Aware System**: All hard-coded colors replaced with theme-derived values across entire app
 
 - **Nov 4, 2025 (Evening)**: Complete Feature Implementation & UI/UX Polish + Theme-Aware Color System
   - **Project Detail Screen**: Removed section tabs and floating button - shows only header and task list
