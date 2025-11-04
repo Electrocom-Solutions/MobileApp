@@ -230,6 +230,8 @@ lib/
   - **Profile Screen**: Added Edit Profile functionality with all editable fields
   - **Theme Provider**: Created ThemeProvider for theme state management with SharedPreferences persistence
   - **Light Theme**: Designed and implemented complete light theme with proper colors and contrasts
+  - **Bug Fix**: Fixed exhaustive switch statement for TaskStatus enum (added missing toDo, pendingApproval, rejected cases)
+  - **Dependencies**: Added shared_preferences ^2.3.3 to pubspec.yaml for theme persistence
   
 - **Nov 4, 2025 (Afternoon)**: Complete Task Tracking Module
   - Implemented Projects List, Project Detail, Create/Edit Task, and Task Detail screens

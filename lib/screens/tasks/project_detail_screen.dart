@@ -275,12 +275,18 @@ class ProjectDetailScreen extends StatelessWidget {
     switch (status) {
       case TaskStatus.draft:
         return Colors.grey;
+      case TaskStatus.toDo:
+        return Colors.blueGrey;
       case TaskStatus.inProgress:
         return Colors.orange;
-      case TaskStatus.approved:
-        return Colors.blue;
       case TaskStatus.completed:
         return Colors.green;
+      case TaskStatus.pendingApproval:
+        return Colors.amber;
+      case TaskStatus.approved:
+        return Colors.blue;
+      case TaskStatus.rejected:
+        return Colors.red;
     }
   }
 }
