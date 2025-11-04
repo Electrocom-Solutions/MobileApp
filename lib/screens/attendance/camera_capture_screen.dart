@@ -1,18 +1,14 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as path;
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:intl/intl.dart';
 import '../../config/theme.dart';
+import 'location_confirmation_screen.dart';
 
 class CameraCaptureScreen extends StatefulWidget {
-  final bool isPunchIn;
-
-  const CameraCaptureScreen({
-    super.key,
-    required this.isPunchIn,
-  });
+  const CameraCaptureScreen({super.key});
 
   @override
   State<CameraCaptureScreen> createState() => _CameraCaptureScreenState();
@@ -23,9 +19,6 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
   List<CameraDescription>? _cameras;
   bool _isInitialized = false;
   bool _isFlashOn = false;
-  int _selectedCameraIndex = 0;
-  XFile? _capturedImage;
-  final ImagePicker _imagePicker = ImagePicker();
 
   @override
   void initState() {
@@ -37,13 +30,24 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
     try {
       _cameras = await availableCameras();
       if (_cameras != null && _cameras!.isNotEmpty) {
-        _selectedCameraIndex = _cameras!.indexWhere(
+        // Find front camera
+        final frontCamera = _cameras!.firstWhere(
           (camera) => camera.lensDirection == CameraLensDirection.front,
+          orElse: () => _cameras!.first,
         );
-        if (_selectedCameraIndex == -1) {
-          _selectedCameraIndex = 0;
+
+        _controller = CameraController(
+          frontCamera,
+          ResolutionPreset.high,
+          enableAudio: false,
+        );
+
+        await _controller!.initialize();
+        if (mounted) {
+          setState(() {
+            _isInitialized = true;
+          });
         }
-        await _setupCamera(_selectedCameraIndex);
       }
     } catch (e) {
       debugPrint('Error initializing camera: $e');
@@ -51,43 +55,11 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Camera initialization failed: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppTheme.errorColor,
           ),
         );
       }
     }
-  }
-
-  Future<void> _setupCamera(int cameraIndex) async {
-    if (_cameras == null || _cameras!.isEmpty) return;
-
-    if (_controller != null) {
-      await _controller!.dispose();
-    }
-
-    _controller = CameraController(
-      _cameras![cameraIndex],
-      ResolutionPreset.high,
-      enableAudio: false,
-    );
-
-    try {
-      await _controller!.initialize();
-      if (mounted) {
-        setState(() {
-          _isInitialized = true;
-        });
-      }
-    } catch (e) {
-      debugPrint('Error setting up camera: $e');
-    }
-  }
-
-  Future<void> _toggleCamera() async {
-    if (_cameras == null || _cameras!.length <= 1) return;
-
-    _selectedCameraIndex = (_selectedCameraIndex + 1) % _cameras!.length;
-    await _setupCamera(_selectedCameraIndex);
   }
 
   Future<void> _toggleFlash() async {
@@ -111,55 +83,116 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
     if (_controller == null || !_controller!.value.isInitialized) return;
 
     try {
+      // Show loading
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => Center(
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: AppTheme.cardColor,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircularProgressIndicator(color: AppTheme.primaryColor),
+                const SizedBox(height: 16),
+                Text(
+                  'Capturing location...',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      // Capture photo
       final XFile photo = await _controller!.takePicture();
-      setState(() {
-        _capturedImage = photo;
-      });
+
+      // Get location
+      Position position = await _getCurrentLocation();
+      String address = await _getAddressFromCoordinates(position);
+
+      // Close loading dialog
+      if (mounted) Navigator.pop(context);
+
+      // Navigate to confirmation screen
+      if (mounted) {
+        final result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LocationConfirmationScreen(
+              imagePath: photo.path,
+              latitude: position.latitude,
+              longitude: position.longitude,
+              address: address,
+              timestamp: DateTime.now(),
+            ),
+          ),
+        );
+
+        if (result == true && mounted) {
+          Navigator.pop(context, true);
+        }
+      }
     } catch (e) {
+      if (mounted) Navigator.pop(context); // Close loading dialog
       debugPrint('Error capturing photo: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to capture photo: $e'),
-            backgroundColor: Colors.red,
+            content: Text('Failed: $e'),
+            backgroundColor: AppTheme.errorColor,
           ),
         );
       }
     }
   }
 
-  Future<void> _pickFromGallery() async {
+  Future<Position> _getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      throw Exception('Location services are disabled');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        throw Exception('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      throw Exception('Location permissions are permanently denied');
+    }
+
+    return await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+  }
+
+  Future<String> _getAddressFromCoordinates(Position position) async {
     try {
-      final XFile? image = await _imagePicker.pickImage(
-        source: ImageSource.gallery,
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
       );
-      if (image != null) {
-        setState(() {
-          _capturedImage = image;
-        });
+
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks.first;
+        return '${place.street}, ${place.locality}, ${place.administrativeArea}';
       }
+      return '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
     } catch (e) {
-      debugPrint('Error picking image: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to pick image: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
-
-  void _retake() {
-    setState(() {
-      _capturedImage = null;
-    });
-  }
-
-  void _usePhoto() {
-    if (_capturedImage != null) {
-      Navigator.pop(context, _capturedImage!.path);
+      debugPrint('Error getting address: $e');
+      return '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
     }
   }
 
@@ -172,204 +205,144 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.darkBackground,
-      appBar: AppBar(
-        title: Text(widget.isPunchIn ? 'Punch In - Selfie' : 'Punch Out - Selfie'),
-        backgroundColor: AppTheme.darkSurface,
-      ),
-      body: _capturedImage == null ? _buildCameraView() : _buildPreviewView(),
-    );
-  }
-
-  Widget _buildCameraView() {
-    if (!_isInitialized || _controller == null) {
-      return const Center(
-        child: CircularProgressIndicator(color: AppTheme.primaryPurple),
-      );
-    }
-
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            'Take a selfie for attendance verification',
-            style: TextStyle(
-              color: AppTheme.textSecondary,
-              fontSize: 14,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        Expanded(
-          child: Center(
-            child: AspectRatio(
-              aspectRatio: 3 / 4,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: CameraPreview(_controller!),
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildControlButton(
-                icon: Icons.photo_library,
-                label: 'Gallery',
-                onTap: _pickFromGallery,
-              ),
-              _buildCaptureButton(),
-              _buildControlButton(
-                icon: _isFlashOn ? Icons.flash_on : Icons.flash_off,
-                label: 'Flash',
-                onTap: _toggleFlash,
-              ),
-              if (_cameras != null && _cameras!.length > 1)
-                _buildControlButton(
-                  icon: Icons.flip_camera_android,
-                  label: 'Flip',
-                  onTap: _toggleCamera,
-                ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPreviewView() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            'Review your selfie',
-            style: TextStyle(
-              color: AppTheme.textSecondary,
-              fontSize: 14,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        Expanded(
-          child: Center(
-            child: AspectRatio(
-              aspectRatio: 3 / 4,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.file(
-                  File(_capturedImage!.path),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: _retake,
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    side: const BorderSide(color: AppTheme.primaryPurple),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+      backgroundColor: AppTheme.backgroundColor,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close, color: AppTheme.textPrimary),
+                  ),
+                  Expanded(
+                    child: Text(
+                      'Take Selfie',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
-                  child: const Text(
-                    'Retake',
-                    style: TextStyle(
-                      color: AppTheme.primaryPurple,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
+                  const SizedBox(width: 48),
+                ],
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: _usePhoto,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryPurple,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+            ),
+
+            // Instruction text
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Text(
+                'Position your face in the center circle',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppTheme.textSecondary,
                     ),
-                  ),
-                  child: const Text(
-                    'Use Photo',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
+                textAlign: TextAlign.center,
               ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+            ),
 
-  Widget _buildCaptureButton() {
-    return GestureDetector(
-      onTap: _capturePhoto,
-      child: Container(
-        width: 70,
-        height: 70,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.white, width: 4),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: Container(
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppTheme.primaryPurple,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+            const SizedBox(height: 32),
 
-  Widget _buildControlButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              color: AppTheme.darkSurface,
-              shape: BoxShape.circle,
+            // Large circular camera preview
+            Expanded(
+              child: Center(
+                child: _isInitialized && _controller != null
+                    ? Container(
+                        width: 300,
+                        height: 300,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: AppTheme.primaryColor,
+                            width: 4,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.primaryColor.withOpacity(0.3),
+                              blurRadius: 20,
+                              spreadRadius: 5,
+                            ),
+                          ],
+                        ),
+                        child: ClipOval(
+                          child: CameraPreview(_controller!),
+                        ),
+                      )
+                    : Container(
+                        width: 300,
+                        height: 300,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppTheme.cardColor,
+                          border: Border.all(
+                            color: AppTheme.primaryColor.withOpacity(0.3),
+                            width: 4,
+                          ),
+                        ),
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            color: AppTheme.primaryColor,
+                          ),
+                        ),
+                      ),
+              ),
             ),
-            child: Icon(icon, color: Colors.white),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 12,
+
+            const SizedBox(height: 32),
+
+            // Controls
+            Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // Flash toggle
+                  IconButton(
+                    onPressed: _toggleFlash,
+                    icon: Icon(
+                      _isFlashOn ? Icons.flash_on : Icons.flash_off,
+                      color: AppTheme.textPrimary,
+                      size: 30,
+                    ),
+                  ),
+
+                  // Capture button
+                  GestureDetector(
+                    onTap: _capturePhoto,
+                    child: Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: AppTheme.primaryColor,
+                          width: 4,
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(6.0),
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppTheme.primaryColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Placeholder for symmetry
+                  const SizedBox(width: 48),
+                ],
+              ),
             ),
-          ),
-        ],
+
+            const SizedBox(height: 16),
+          ],
+        ),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import '../../config/theme.dart';
+import '../attendance/camera_capture_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,44 +12,76 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool isPunchedIn = true;
-  String? punchInTime = '09:02 AM';
-  String currentCity = 'Mumbai';
+  bool isPunchedIn = false;
+  String? punchInTime;
   String userName = 'Vaibhav';
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
+    if (hour < 12) return 'Good Morning';
+    if (hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
   }
 
   String _getCurrentDate() {
-    return DateFormat('EEE, dd MMM').format(DateTime.now());
+    return DateFormat('EEEE, d MMMM').format(DateTime.now());
   }
 
-  void _handlePunchAction() {
-    HapticFeedback.mediumImpact();
-    setState(() {
-      if (isPunchedIn) {
-        isPunchedIn = false;
-        punchInTime = null;
-      } else {
-        isPunchedIn = true;
-        punchInTime = DateFormat('hh:mm a').format(DateTime.now());
-      }
-    });
+  String _getStatusSummary() {
+    if (isPunchedIn && punchInTime != null) {
+      return 'Punched in at $punchInTime';
+    }
+    return 'You are not punched in yet';
+  }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          isPunchedIn ? 'Punched In successfully! ✓' : 'Punched Out successfully!',
-          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
-        ),
-        backgroundColor: AppTheme.primaryColor,
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  Future<void> _handlePunchIn() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const CameraCaptureScreen(),
+      ),
+    );
+
+    if (result != null && result == true) {
+      setState(() {
+        isPunchedIn = true;
+        punchInTime = DateFormat('h:mm a').format(DateTime.now());
+      });
+    }
+  }
+
+  void _handlePunchOut() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.cardColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Punch Out'),
+        content: const Text('Are you sure you want to punch out?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                isPunchedIn = false;
+                punchInTime = null;
+              });
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('Punched out successfully ✅'),
+                  backgroundColor: AppTheme.successColor,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              );
+            },
+            child: const Text('Punch Out'),
+          ),
+        ],
       ),
     );
   }
@@ -58,190 +91,73 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildTopBar(context),
-                    const SizedBox(height: 16),
-                    _buildMicrocopy(),
-                    const SizedBox(height: 24),
-                    _buildHeroAttendanceCard(),
-                    const SizedBox(height: 20),
-                    _buildStatsRow(),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Quick Actions',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildQuickActionsGrid(),
-                    const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Recent Activity',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
-                        ),
-                        TextButton(
-                          onPressed: () {},
-                          child: const Text('View All'),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                ),
-              ),
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final activities = [
-                      {
-                        'title': 'Project Documentation',
-                        'subtitle': 'Submitted • 2 hours ago',
-                        'status': 'Pending Review',
-                        'statusColor': AppTheme.warningColor,
-                        'icon': Icons.description_outlined,
-                      },
-                      {
-                        'title': 'Task Completed',
-                        'subtitle': 'Cable Installation • Today',
-                        'status': 'Approved',
-                        'statusColor': AppTheme.successColor,
-                        'icon': Icons.task_alt,
-                      },
-                      {
-                        'title': 'Monthly Report',
-                        'subtitle': 'Submitted • Yesterday',
-                        'status': 'Under Review',
-                        'statusColor': AppTheme.secondaryColor,
-                        'icon': Icons.assessment_outlined,
-                      },
-                    ];
-
-                    return _buildActivityCard(
-                      activities[index]['title'] as String,
-                      activities[index]['subtitle'] as String,
-                      activities[index]['status'] as String,
-                      activities[index]['statusColor'] as Color,
-                      activities[index]['icon'] as IconData,
-                    );
-                  },
-                  childCount: 3,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: _buildFAB(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-    );
-  }
-
-  Widget _buildTopBar(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: LinearGradient(
-              colors: [AppTheme.primaryColor, AppTheme.secondaryColor],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: const Center(
-            child: Text(
-              'V',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                '${_getGreeting()}, $userName',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-              ),
-              Row(
-                children: [
-                  Text(
-                    _getCurrentDate(),
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  const SizedBox(width: 8),
-                  const Text('•', style: TextStyle(color: AppTheme.textHint)),
-                  const SizedBox(width: 8),
-                  const Icon(Icons.location_on, size: 12, color: AppTheme.textHint),
-                  const SizedBox(width: 4),
-                  Text(
-                    currentCity,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
-              ),
+              _buildGreetingSection(),
+              const SizedBox(height: 20),
+              _buildHeroPunchCard(),
+              const SizedBox(height: 20),
+              _buildInfoTilesRow(),
+              const SizedBox(height: 24),
+              _buildQuickActionSection(),
+              const SizedBox(height: 24),
+              _buildRecentActivitySection(),
+              const SizedBox(height: 20),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildGreetingSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '${_getGreeting()}, $userName 👋',
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppTheme.textPrimary,
+              ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          _getCurrentDate(),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppTheme.textSecondary,
+              ),
+        ),
+        const SizedBox(height: 12),
         Container(
-          width: 40,
-          height: 40,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: AppTheme.cardColor,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: isPunchedIn
+                  ? AppTheme.successColor.withOpacity(0.3)
+                  : AppTheme.primaryColor.withOpacity(0.3),
+              width: 1,
+            ),
           ),
-          child: Stack(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              const Center(
-                child: Icon(
-                  Icons.notifications_outlined,
-                  color: AppTheme.textPrimary,
-                  size: 22,
-                ),
+              Icon(
+                isPunchedIn ? Icons.check_circle : Icons.info_outline,
+                size: 16,
+                color: isPunchedIn ? AppTheme.successColor : AppTheme.primaryColor,
               ),
-              Positioned(
-                top: 8,
-                right: 8,
-                child: Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryColor,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.primaryColor.withOpacity(0.5),
-                        blurRadius: 4,
-                        spreadRadius: 1,
-                      ),
-                    ],
-                  ),
-                ),
+              const SizedBox(width: 8),
+              Text(
+                _getStatusSummary(),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppTheme.textSecondary,
+                    ),
               ),
             ],
           ),
@@ -250,76 +166,62 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildMicrocopy() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppTheme.cardColor.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: AppTheme.primaryColor.withOpacity(0.2),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.info_outline, size: 14, color: AppTheme.primaryColor),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              'Today • 3 tasks • ${isPunchedIn && punchInTime != null ? "Punched in at $punchInTime" : "Not punched in"}',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppTheme.textSecondary,
-                  ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeroAttendanceCard() {
+  Widget _buildHeroPunchCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isPunchedIn
-              ? [AppTheme.successColor.withOpacity(0.15), AppTheme.primaryColor.withOpacity(0.1)]
-              : [AppTheme.errorColor.withOpacity(0.15), AppTheme.warningColor.withOpacity(0.1)],
+              ? [
+                  AppTheme.successColor.withOpacity(0.15),
+                  AppTheme.cardColor,
+                ]
+              : [
+                  AppTheme.primaryColor.withOpacity(0.15),
+                  AppTheme.cardColor,
+                ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isPunchedIn
-              ? AppTheme.primaryColor.withOpacity(0.3)
-              : AppTheme.errorColor.withOpacity(0.3),
-          width: 1,
+              ? AppTheme.successColor.withOpacity(0.3)
+              : AppTheme.primaryColor.withOpacity(0.3),
+          width: 1.5,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: (isPunchedIn ? AppTheme.successColor : AppTheme.primaryColor)
+                .withOpacity(0.1),
+            blurRadius: 20,
+            spreadRadius: 2,
+          ),
+        ],
       ),
       child: Column(
         children: [
           Row(
             children: [
               Container(
-                width: 80,
-                height: 80,
+                width: 70,
+                height: 70,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: isPunchedIn
-                      ? AppTheme.primaryColor.withOpacity(0.2)
-                      : AppTheme.errorColor.withOpacity(0.2),
+                      ? AppTheme.successColor.withOpacity(0.2)
+                      : AppTheme.primaryColor.withOpacity(0.2),
                   border: Border.all(
-                    color: isPunchedIn ? AppTheme.primaryColor : AppTheme.errorColor,
+                    color: isPunchedIn ? AppTheme.successColor : AppTheme.primaryColor,
                     width: 3,
                   ),
                 ),
                 child: Center(
                   child: Icon(
-                    isPunchedIn ? Icons.check_circle : Icons.access_time,
-                    color: isPunchedIn ? AppTheme.primaryColor : AppTheme.errorColor,
-                    size: 40,
+                    isPunchedIn ? Icons.check_circle : Icons.fingerprint,
+                    color: isPunchedIn ? AppTheme.successColor : AppTheme.primaryColor,
+                    size: 36,
                   ),
                 ),
               ),
@@ -330,8 +232,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Text(
                       isPunchedIn ? 'Punched In' : 'Not Punched In',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            color: isPunchedIn ? AppTheme.primaryColor : AppTheme.errorColor,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: isPunchedIn ? AppTheme.successColor : AppTheme.primaryColor,
                             fontWeight: FontWeight.bold,
                           ),
                     ),
@@ -339,32 +241,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text(
                       isPunchedIn && punchInTime != null
                           ? 'Started at $punchInTime'
-                          : 'Ready to start your day',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    if (isPunchedIn) ...[
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(Icons.timer_outlined, size: 14, color: AppTheme.textSecondary),
-                          const SizedBox(width: 4),
-                          Text(
-                            '6h 30m logged',
-                            style: Theme.of(context).textTheme.bodySmall,
+                          : 'Tap below to mark your attendance',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppTheme.textSecondary,
                           ),
-                        ],
-                      ),
-                    ],
+                    ),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: _handlePunchAction,
+            child: ElevatedButton(
+              onPressed: isPunchedIn ? _handlePunchOut : _handlePunchIn,
               style: ElevatedButton.styleFrom(
                 backgroundColor: isPunchedIn ? AppTheme.errorColor : AppTheme.primaryColor,
                 foregroundColor: Colors.white,
@@ -372,80 +263,88 @@ class _HomeScreenState extends State<HomeScreen> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
+                elevation: 0,
               ),
-              icon: Icon(isPunchedIn ? Icons.logout : Icons.login),
-              label: Text(
-                isPunchedIn ? 'Punch Out' : 'Punch In',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(isPunchedIn ? Icons.logout : Icons.camera_alt),
+                  const SizedBox(width: 10),
+                  Text(
+                    isPunchedIn ? 'Punch Out' : 'Punch In',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-          if (isPunchedIn) ...[
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.coffee_outlined, size: 16),
-                  label: const Text('Mark Break'),
-                  style: TextButton.styleFrom(
-                    foregroundColor: AppTheme.textSecondary,
-                    textStyle: const TextStyle(fontSize: 13),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                TextButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.edit_outlined, size: 16),
-                  label: const Text('Request Correction'),
-                  style: TextButton.styleFrom(
-                    foregroundColor: AppTheme.textSecondary,
-                    textStyle: const TextStyle(fontSize: 13),
-                  ),
-                ),
-              ],
-            ),
-          ],
         ],
       ),
     );
   }
 
-  Widget _buildStatsRow() {
+  Widget _buildInfoTilesRow() {
     return Row(
       children: [
-        Expanded(child: _buildStatCard('5', 'Ongoing\nTasks', AppTheme.primaryColor, Icons.pending_actions)),
+        Expanded(
+          child: _buildInfoTile(
+            'Pending\nTasks',
+            '5',
+            Icons.pending_actions,
+            AppTheme.primaryColor,
+          ),
+        ),
         const SizedBox(width: 12),
-        Expanded(child: _buildStatCard('2', 'Pending\nApprovals', AppTheme.warningColor, Icons.hourglass_empty)),
+        Expanded(
+          child: _buildInfoTile(
+            'Working\nDays',
+            '22',
+            Icons.calendar_month,
+            AppTheme.warningColor,
+          ),
+        ),
         const SizedBox(width: 12),
-        Expanded(child: _buildStatCard('6.5h', 'Logged\nToday', AppTheme.successColor, Icons.timer)),
+        Expanded(
+          child: _buildInfoTile(
+            'Days\nPresent',
+            '18',
+            Icons.check_circle,
+            AppTheme.successColor,
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildStatCard(String value, String label, Color accentColor, IconData icon) {
+  Widget _buildInfoTile(String label, String value, IconData icon, Color accentColor) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppTheme.cardColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: accentColor.withOpacity(0.2),
           width: 1,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: accentColor.withOpacity(0.05),
+            blurRadius: 10,
+            spreadRadius: 1,
+          ),
+        ],
       ),
       child: Column(
         children: [
-          Icon(icon, color: accentColor, size: 24),
-          const SizedBox(height: 8),
+          Icon(icon, color: accentColor, size: 28),
+          const SizedBox(height: 10),
           Text(
             value,
             style: TextStyle(
-              fontSize: 22,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
               color: accentColor,
             ),
@@ -455,6 +354,7 @@ class _HomeScreenState extends State<HomeScreen> {
             label,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppTheme.textSecondary,
                   height: 1.2,
                 ),
           ),
@@ -463,89 +363,77 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildQuickActionsGrid() {
-    return Row(
-      children: [
-        Expanded(
-          child: Column(
-            children: [
-              _buildQuickActionButton(
-                'Create\nTask',
-                Icons.add_task,
-                AppTheme.primaryColor,
-                () {},
-              ),
-              const SizedBox(height: 12),
-              _buildQuickActionButton(
-                'Scan\nDocument',
-                Icons.qr_code_scanner,
-                AppTheme.secondaryColor,
-                () {},
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            children: [
-              _buildQuickActionButton(
-                'Start\nShift',
-                Icons.work_outline,
-                AppTheme.successColor,
-                () {},
-              ),
-              const SizedBox(height: 12),
-              _buildQuickActionButton(
-                'Report\nIssue',
-                Icons.report_problem_outlined,
-                AppTheme.warningColor,
-                () {},
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildQuickActionButton(String label, IconData icon, Color color, VoidCallback onTap) {
+  Widget _buildQuickActionSection() {
     return InkWell(
       onTap: () {
         HapticFeedback.lightImpact();
-        onTap();
+        // Navigate to create task screen
       },
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(16),
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 20),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: AppTheme.cardColor,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: color.withOpacity(0.3),
-            width: 1,
+          gradient: LinearGradient(
+            colors: [
+              AppTheme.primaryColor,
+              AppTheme.secondaryColor,
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.primaryColor.withOpacity(0.3),
+              blurRadius: 15,
+              spreadRadius: 2,
+            ),
+          ],
         ),
-        child: Column(
+        child: Row(
           children: [
             Container(
-              width: 48,
-              height: 48,
+              width: 50,
+              height: 50,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.15),
+                color: Colors.white.withOpacity(0.2),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: color, size: 24),
+              child: const Icon(
+                Icons.add,
+                color: Colors.white,
+                size: 28,
+              ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.w500,
-                    height: 1.2,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Create a New Task',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Quickly assign or start a task',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.white.withOpacity(0.8),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.white,
+              size: 18,
             ),
           ],
         ),
@@ -553,19 +441,47 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildActivityCard(
-    String title,
-    String subtitle,
-    String status,
-    Color statusColor,
-    IconData icon,
-  ) {
+  Widget _buildRecentActivitySection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Recent Activity',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppTheme.textPrimary,
+              ),
+        ),
+        const SizedBox(height: 12),
+        _buildActivityItem(
+          'You punched in at 9:04 AM',
+          '5 hours ago',
+          Icons.login,
+          AppTheme.successColor,
+        ),
+        _buildActivityItem(
+          'You completed Task #125',
+          'Yesterday',
+          Icons.task_alt,
+          AppTheme.primaryColor,
+        ),
+        _buildActivityItem(
+          'New task assigned by Admin',
+          '2 days ago',
+          Icons.assignment,
+          AppTheme.warningColor,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActivityItem(String title, String time, IconData icon, Color color) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppTheme.cardColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: AppTheme.surfaceColor,
           width: 1,
@@ -574,13 +490,13 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Row(
         children: [
           Container(
-            width: 44,
-            height: 44,
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
-              color: statusColor.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(12),
+              color: color.withOpacity(0.15),
+              shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: statusColor, size: 22),
+            child: Icon(icon, color: color, size: 20),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -589,66 +505,22 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Text(
                   title,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppTheme.textPrimary,
                       ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  subtitle,
-                  style: Theme.of(context).textTheme.bodySmall,
+                  time,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppTheme.textSecondary,
+                      ),
                 ),
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color: statusColor.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              status,
-              style: TextStyle(
-                color: statusColor,
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildFAB() {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.primaryColor.withOpacity(0.4),
-            blurRadius: 20,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: FloatingActionButton.extended(
-        onPressed: _handlePunchAction,
-        backgroundColor: isPunchedIn ? AppTheme.errorColor : AppTheme.primaryColor,
-        elevation: 0,
-        icon: Icon(
-          isPunchedIn ? Icons.logout : Icons.login,
-          color: Colors.white,
-        ),
-        label: Text(
-          isPunchedIn ? 'Punch Out' : 'Punch In',
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
-        ),
       ),
     );
   }

@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // New Professional Black Theme Color Palette
-  static const Color primaryColor = Color(0xFF00BFA6); // Vivid Teal accent
-  static const Color secondaryColor = Color(0xFF2196F3); // Electric Blue
-  static const Color backgroundColor = Color(0xFF000000); // Pure Black
-  static const Color surfaceColor = Color(0xFF0B0B0D); // Dark Gray
-  static const Color cardColor = Color(0xFF0F1113); // Card surface with elevation
+  // Professional Dark Theme Color Palette
+  static const Color primaryColor = Color(0xFF007BFF); // Vibrant Blue accent
+  static const Color secondaryColor = Color(0xFF0056D2); // Darker Blue
+  static const Color backgroundColor = Color(0xFF0B0D11); // Very Dark Gray/Black
+  static const Color surfaceColor = Color(0xFF111318); // Slightly lighter for cards
+  static const Color cardColor = Color(0xFF111318); // Card background
   static const Color errorColor = Color(0xFFCF6679);
   static const Color successColor = Color(0xFF4CAF50);
   static const Color warningColor = Color(0xFFFFA726);
   
-  static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(0xFFB3B3B3);
-  static const Color textHint = Color(0xFF808080);
+  static const Color textPrimary = Color(0xFFE0E0E0); // Light gray for main text
+  static const Color textSecondary = Color(0xFF9CA3AF); // Gray for secondary text
+  static const Color textHint = Color(0xFF6B7280);
 
   static ThemeData get darkTheme {
     return ThemeData(

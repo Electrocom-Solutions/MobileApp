@@ -1,170 +1,271 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import '../../config/theme.dart';
-import '../../models/attendance.dart';
-import '../../providers/attendance_provider.dart';
 
-class LocationConfirmationScreen extends StatefulWidget {
-  final String selfieFilePath;
-  final bool isPunchIn;
+class LocationConfirmationScreen extends StatelessWidget {
+  final String imagePath;
+  final double latitude;
+  final double longitude;
+  final String address;
+  final DateTime timestamp;
 
   const LocationConfirmationScreen({
     super.key,
-    required this.selfieFilePath,
-    required this.isPunchIn,
+    required this.imagePath,
+    required this.latitude,
+    required this.longitude,
+    required this.address,
+    required this.timestamp,
   });
 
   @override
-  State<LocationConfirmationScreen> createState() =>
-      _LocationConfirmationScreenState();
-}
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
+      appBar: AppBar(
+        title: const Text('Confirm Attendance'),
+        backgroundColor: AppTheme.backgroundColor,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Selfie preview
+            Center(
+              child: Container(
+                width: 200,
+                height: 200,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: AppTheme.primaryColor,
+                    width: 3,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.primaryColor.withOpacity(0.3),
+                      blurRadius: 15,
+                      spreadRadius: 3,
+                    ),
+                  ],
+                ),
+                child: ClipOval(
+                  child: Image.file(
+                    File(imagePath),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
 
-class _LocationConfirmationScreenState
-    extends State<LocationConfirmationScreen> {
-  Position? _currentPosition;
-  String _address = 'Fetching address...';
-  bool _isLoading = true;
-  GoogleMapController? _mapController;
-  bool _showFullImage = false;
+            const SizedBox(height: 32),
 
-  @override
-  void initState() {
-    super.initState();
-    _getCurrentLocation();
-  }
+            // Details card
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppTheme.cardColor,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: AppTheme.primaryColor.withOpacity(0.2),
+                  width: 1,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Attendance Details',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textPrimary,
+                        ),
+                  ),
+                  const SizedBox(height: 20),
 
-  Future<void> _getCurrentLocation() async {
-    try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        setState(() {
-          _address = 'Location services are disabled';
-          _isLoading = false;
-        });
-        return;
-      }
+                  // Time
+                  _buildDetailRow(
+                    Icons.access_time,
+                    'Time',
+                    DateFormat('h:mm a').format(timestamp),
+                  ),
+                  const SizedBox(height: 16),
 
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          setState(() {
-            _address = 'Location permission denied';
-            _isLoading = false;
-          });
-          return;
-        }
-      }
+                  // Date
+                  _buildDetailRow(
+                    Icons.calendar_today,
+                    'Date',
+                    DateFormat('EEEE, MMMM d, y').format(timestamp),
+                  ),
+                  const SizedBox(height: 16),
 
-      if (permission == LocationPermission.deniedForever) {
-        setState(() {
-          _address = 'Location permission permanently denied';
-          _isLoading = false;
-        });
-        return;
-      }
+                  // Location
+                  _buildDetailRow(
+                    Icons.location_on,
+                    'Location',
+                    address,
+                  ),
+                  const SizedBox(height: 16),
 
-      final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
+                  // Coordinates
+                  _buildDetailRow(
+                    Icons.my_location,
+                    'Coordinates',
+                    '${latitude.toStringAsFixed(6)}, ${longitude.toStringAsFixed(6)}',
+                  ),
+                ],
+              ),
+            ),
 
-      setState(() {
-        _currentPosition = position;
-      });
+            const SizedBox(height: 24),
 
-      await _getAddressFromCoordinates();
-    } catch (e) {
-      debugPrint('Error getting location: $e');
-      setState(() {
-        _address = 'Unable to fetch location';
-        _isLoading = false;
-      });
-    }
-  }
+            // Info text
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppTheme.primaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: AppTheme.primaryColor.withOpacity(0.3),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.info_outline,
+                    color: AppTheme.primaryColor,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Please verify your details before confirming',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppTheme.textSecondary,
+                          ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
-  Future<void> _getAddressFromCoordinates() async {
-    if (_currentPosition == null) return;
+            const SizedBox(height: 32),
 
-    try {
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-        _currentPosition!.latitude,
-        _currentPosition!.longitude,
-      );
-
-      if (placemarks.isNotEmpty) {
-        final placemark = placemarks.first;
-        setState(() {
-          _address = [
-            placemark.street,
-            placemark.subLocality,
-            placemark.locality,
-            placemark.administrativeArea,
-          ].where((e) => e != null && e.isNotEmpty).join(', ');
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      debugPrint('Error getting address: $e');
-      setState(() {
-        _address =
-            'Lat: ${_currentPosition!.latitude.toStringAsFixed(6)}, Lon: ${_currentPosition!.longitude.toStringAsFixed(6)}';
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _confirmPunch() async {
-    if (_currentPosition == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please wait for location to be fetched'),
-          backgroundColor: Colors.orange,
+            // Action buttons
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      side: const BorderSide(color: AppTheme.textSecondary),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Retake',
+                      style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  flex: 2,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Show success animation
+                      _showSuccessDialog(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primaryColor,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Confirm & Punch In',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
-      );
-      return;
-    }
-
-    final record = AttendanceRecord(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      userId: 'user1',
-      timestamp: DateTime.now(),
-      punchType: widget.isPunchIn ? PunchType.punchIn : PunchType.punchOut,
-      latitude: _currentPosition!.latitude,
-      longitude: _currentPosition!.longitude,
-      accuracy: _currentPosition!.accuracy,
-      address: _address,
-      selfieFilePath: widget.selfieFilePath,
-      deviceId: 'device1',
+      ),
     );
-
-    await Provider.of<AttendanceProvider>(context, listen: false)
-        .addRecord(record);
-
-    if (mounted) {
-      await _showSuccessAnimation();
-      if (mounted) {
-        Navigator.of(context).popUntil((route) => route.isFirst);
-      }
-    }
   }
 
-  Future<void> _showSuccessAnimation() async {
+  Widget _buildDetailRow(IconData icon, String label, String value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: AppTheme.primaryColor.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, color: AppTheme.primaryColor, size: 20),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                value,
+                style: const TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showSuccessDialog(BuildContext context) {
     HapticFeedback.mediumImpact();
     
-    await showDialog(
+    showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
+      builder: (context) => Center(
         child: Container(
-          padding: const EdgeInsets.all(32),
+          margin: const EdgeInsets.symmetric(horizontal: 40),
+          padding: const EdgeInsets.all(30),
           decoration: BoxDecoration(
-            color: AppTheme.darkSurface,
+            color: AppTheme.cardColor,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Column(
@@ -174,34 +275,33 @@ class _LocationConfirmationScreenState
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.2),
+                  color: AppTheme.successColor.withOpacity(0.2),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   Icons.check_circle,
-                  color: Colors.green,
-                  size: 60,
+                  color: AppTheme.successColor,
+                  size: 50,
                 ),
               ),
-              const SizedBox(height: 24),
-              Text(
-                widget.isPunchIn
-                    ? 'Punched In Successfully!'
-                    : 'Punched Out Successfully!',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
+              const SizedBox(height: 20),
+              const Text(
+                'Attendance Marked Successfully ✅',
+                style: TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
-              Text(
-                DateTime.now().toString().substring(0, 19),
+              const Text(
+                'You have been marked present',
                 style: TextStyle(
                   color: AppTheme.textSecondary,
                   fontSize: 14,
                 ),
+                textAlign: TextAlign.center,
               ),
             ],
           ),
@@ -209,297 +309,10 @@ class _LocationConfirmationScreenState
       ),
     );
 
-    await Future.delayed(const Duration(seconds: 2));
-    if (mounted) {
-      Navigator.of(context).pop();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.darkBackground,
-      appBar: AppBar(
-        title: Text(widget.isPunchIn ? 'Confirm Punch In' : 'Confirm Punch Out'),
-        backgroundColor: AppTheme.darkSurface,
-      ),
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: AppTheme.primaryPurple),
-            )
-          : Stack(
-              children: [
-                SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildSelfieSection(),
-                      const SizedBox(height: 24),
-                      _buildLocationSection(),
-                      const SizedBox(height: 24),
-                      _buildMapSection(),
-                      const SizedBox(height: 24),
-                      _buildTimestampSection(),
-                      const SizedBox(height: 100),
-                    ],
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: _buildConfirmButton(),
-                ),
-                if (_showFullImage) _buildFullImageOverlay(),
-              ],
-            ),
-    );
-  }
-
-  Widget _buildSelfieSection() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.darkSurface,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Your Selfie',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 12),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _showFullImage = true;
-              });
-            },
-            child: Center(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.file(
-                  File(widget.selfieFilePath),
-                  width: 120,
-                  height: 120,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Center(
-            child: Text(
-              'Tap to enlarge',
-              style: TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 12,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLocationSection() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.darkSurface,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Location',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              const Icon(Icons.location_on, color: AppTheme.primaryPurple),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  _address,
-                  style: TextStyle(
-                    color: AppTheme.textSecondary,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          if (_currentPosition != null) ...[
-            const SizedBox(height: 8),
-            Text(
-              'Accuracy: ${_currentPosition!.accuracy.toStringAsFixed(1)}m',
-              style: TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMapSection() {
-    if (_currentPosition == null) {
-      return const SizedBox.shrink();
-    }
-
-    return Container(
-      height: 200,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: AppTheme.darkSurface,
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: GoogleMap(
-        initialCameraPosition: CameraPosition(
-          target: LatLng(
-            _currentPosition!.latitude,
-            _currentPosition!.longitude,
-          ),
-          zoom: 16,
-        ),
-        markers: {
-          Marker(
-            markerId: const MarkerId('current_location'),
-            position: LatLng(
-              _currentPosition!.latitude,
-              _currentPosition!.longitude,
-            ),
-          ),
-        },
-        onMapCreated: (controller) {
-          _mapController = controller;
-        },
-        myLocationEnabled: true,
-        myLocationButtonEnabled: false,
-        zoomControlsEnabled: false,
-        mapType: MapType.normal,
-      ),
-    );
-  }
-
-  Widget _buildTimestampSection() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.darkSurface,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.access_time, color: AppTheme.primaryPurple),
-          const SizedBox(width: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Timestamp',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                DateTime.now().toString().substring(0, 19),
-                style: TextStyle(
-                  color: AppTheme.textSecondary,
-                  fontSize: 12,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildConfirmButton() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.darkBackground,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: ElevatedButton(
-        onPressed: _confirmPunch,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppTheme.primaryPurple,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-        child: Text(
-          widget.isPunchIn ? 'Confirm & Punch In' : 'Confirm & Punch Out',
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFullImageOverlay() {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _showFullImage = false;
-        });
-      },
-      child: Container(
-        color: Colors.black.withOpacity(0.9),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              InteractiveViewer(
-                child: Image.file(
-                  File(widget.selfieFilePath),
-                  fit: BoxFit.contain,
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Tap anywhere to close',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    // Auto close after 2 seconds
+    Future.delayed(const Duration(seconds: 2), () {
+      Navigator.pop(context); // Close dialog
+      Navigator.pop(context, true); // Return to home
+    });
   }
 }

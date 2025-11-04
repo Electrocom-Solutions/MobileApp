@@ -1,0 +1,127 @@
+Theme & Look
+Use dark mode as the default.
+Background: very dark gray or black (#0b0d11 or similar).
+Cards: slightly lighter background (#111318 or similar).
+Accent color: vibrant blue (#007bff or similar to the blue in the screenshot).
+Text: use light gray or white (#e0e0e0 for main text, #9ca3af for secondary).
+Keep everything rounded, minimal, and consistent.
+Use soft shadows or glows for depth.
+Home / Dashboard Screen
+The Home screen should be the main page employees see after login.
+ It should feel welcoming and informative, but not crowded.
+Sections:
+Top Section – Greeting & Date
+A small row showing:
+“Good Morning, Vaibhav 👋” (dynamic based on time)
+Today’s date (like “Tuesday, 4 November”)
+Below that, a summary line such as:
+“You are not punched in yet” OR “Punched in at 9:04 AM”
+
+
+Hero Card – Punch In / Punch Out
+A large, centered card at the top of the dashboard.
+Shows current attendance status:
+If not punched in → show “Punch In” button
+If already punched in → show “Punched In” with time and “Punch Out” button
+Use the bright blue accent color for the active button.
+
+
+When user clicks “Punch In”:
+Open a popup window or modal overlaying the screen.
+Inside this popup:
+Show a large circle camera view (live camera preview).
+User must take a selfie.
+After taking the selfie:
+Automatically capture location (GPS) and current time.
+Show a confirmation screen with:
+Selfie preview (small thumbnail)
+Captured location (address or map)
+Timestamp
+Button: Confirm & Mark Attendance
+Only after the user confirms, mark them as Present.
+Show a small success animation or message like:
+ “Attendance marked successfully ✅”
+
+
+
+Important:
+ Remove any floating Punch button that hovers at the bottom —
+ the one inside the hero card is enough.
+
+
+Info Tiles Row (3 Cards)
+Below the hero card, show three small info cards in one row:
+Pending Tasks
+Total Working Days
+Days Present
+Each card should:
+Use the same card style (dark background with blue accent number)
+Have a small icon and short label.
+
+
+Quick Action Section
+Keep only one card here: “Create New Task”.
+Remove the other 3 actions.
+This card should take the full width of the row,
+ like a large, attractive blue button card.
+Add a plus icon (+) and text like:
+ “Create a New Task”
+ Small subtext: “Quickly assign or start a task”
+
+
+Recent Activity Section
+Show a simple vertical list of latest actions:
+“You punched in at 9:04 AM”
+“You completed Task #125”
+“New task assigned by Admin”
+Each list item should have:
+Small circular icon
+Title
+Subtext (time, e.g. “5 hours ago”)
+Keep it minimal and clean.
+
+
+
+Attendance Module
+1. Punch In / Punch Out Flow
+Entry points:
+From Dashboard “Punch In” button
+Or from Attendance tab in bottom navigation.
+
+
+Flow:
+User taps Mark Attendance
+Popup shows camera circle for selfie.
+User takes selfie (front camera preferred).
+After capture, show confirmation:
+Selfie preview
+Location (via GPS)
+Current time
+Button: Confirm & Punch In
+
+
+On success:
+Show animation/checkmark
+Update Dashboard to “Punched In at [time]”
+
+
+Capture and store:
+userId
+timestamp
+selfie file path
+latitude, longitude
+deviceId
+punchType (IN/OUT)
+2. Attendance History Screen
+Two view modes:
+Calendar View: each date shows a colored mark for attendance.
+List View: shows each day with IN/OUT time, total hours, selfie preview.
+Include filters for month and year.
+
+
+Bottom Navigation Bar
+Keep 5 icons: Home, Attendance, Tasks, Notifications, Profile.
+Show only icons, no labels/text under them.
+Active icon color: blue.
+Inactive icons: white with low opacity.
+Background: dark gray / black to match the app.
