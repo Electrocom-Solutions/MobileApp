@@ -1,0 +1,68 @@
+5. Task Tracking Module
+5.1 Projects list (entry)
+Screen: Projects displayed as cards (title, brief, client)
+Card contents (reference from website): Project title, client name (subtext), short description, start / end dates.
+UI: ListView of Card widgets; each card shows an action to open Project Details.
+Project details page contains all the tasks related to that project.
+Controls: Search bar
+5.2 Project detail
+Header: Project title, client, status badge
+CTA: Create Task (sticky floating button)
+Task list: ​in this screen ​all tasks related to that project will be shown in card format.
+Each task shown as a compact card with:
+Task Creation Date (e.g., Nov 01, 2025)
+Project title
+Short description (one-line)
+Time taken (e.g., 480 min)
+Status chip (Completed / Approved / In Progress / Pending Approval)
+Resource cost (if available)
+Action icon to view full Task Detail
+Search & Filters: search by project and status filters (All / Pending / Approved / Completed / Rejected).
+
+
+5.3 Create Task (form) 
+In this form employees will first enter details related to task then they will attach some attachments (optinoal) and then if they have used any resources while completing that task then they should be able to add those resources in that task. employees should also be able to change status of their task at time of creating of task by employee it should be marked as Draft. 
+Fields:
+Task Name (required)
+Description (multiline)
+Date (DatePicker; default: today)
+Location (auto-detected with option to edit)
+Time Taken (duration input in minutes with an optional human-readable display like 480 minutes (8.0 hrs))
+Project (preselected as its opened from within a project) should be viewonly.
+Attachments (Photos & Files)
+Horizontal thumbnail stack showing attachments (images and documents) with the following actions on each thumbnail:
+Preview (tap to open full-screen viewer)
+Delete (trash icon to remove that attachment from task)
+Reorder (drag handle)
+Some icon should be present to attach new attachment to that task: Camera / Gallery / Files (use image_picker for images and file_picker for documents).
+Show file size below filename on the attachment chip (e.g., 2.3 MB).
+For images: show a small camera icon overlay; for PDFs show a document icon.
+Resources Used (table-like inline)
+Employees should be able to enter resources used while doing a particular task
+Each row fields:
+Resource Name (autocomplete or text)
+Quantity (number input)
+Remove action (trash)
+Footer: Total Resource Cost (sum of row totals)
+UX: by default a single empty row shown; user can add rows using + Add Resource button.
+Buttons / Actions
+Save Task
+
+
+5.4 Task Detail 
+Header: Task title and status badge (e.g., Draft, InProgress, Completed)
+Employee should be able to change status of the task, also there should be an edit icon or button clickin on which employee can edit all details of tasks (info details, attachments, resources etc.) but make sure if task is in completed status then he shouldn’t be able to edit anything related to that task, and once a task marked as completed he shouldn’t be able to change status back to InProgress. So ask a confirmation from employee when they mark task as completed.
+Task Information card: display two-column style stacked vertically on mobile with:
+Date
+Time Taken (show both minutes and human-readable hours)
+Location (address + tap to open map)
+Project
+Description
+Attachments section:
+Thumbnails/file chips showing name and size (e.g., cable_routing_plan.pdf — 1000.0 KB)
+Tap opens file viewer or image preview with swipe left/right to move between attachments.
+Employee should be able to attach attachments (photos, pdf)
+Resources Used section:
+Vertical list showing for each resource: name, quantity + unit, unit cost (if available), total cost, and a trash icon for admins/editors.
+Employee should be able to edit the resources, or add resources.
+At the bottom: Total Resource Cost — bold and prominent.

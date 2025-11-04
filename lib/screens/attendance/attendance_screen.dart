@@ -71,33 +71,6 @@ class _AttendanceScreenState extends State<AttendanceScreen> with SingleTickerPr
           _buildListView(),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const CameraCaptureScreen(),
-            ),
-          );
-
-          if (result == true && mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: const Text('Attendance marked successfully ✅'),
-                backgroundColor: AppTheme.successColor,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-            );
-          }
-        },
-        backgroundColor: AppTheme.primaryColor,
-        icon: const Icon(Icons.camera_alt, color: Colors.white),
-        label: const Text(
-          'Mark Attendance',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-      ),
     );
   }
 
