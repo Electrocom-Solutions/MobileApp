@@ -38,6 +38,28 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   void initState() {
     super.initState();
     _locationController.text = 'Auto-detected location';
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.taskId != null) {
+        _loadTaskData();
+      }
+    });
+  }
+  
+  void _loadTaskData() {
+    final task = Provider.of<TaskProvider>(context, listen: false).getTaskById(widget.taskId!);
+    if (task != null) {
+      setState(() {
+        _nameController.text = task.name;
+        _descriptionController.text = task.description;
+        _selectedDate = task.date;
+        _locationController.text = task.location ?? 'Auto-detected location';
+        _timeTakenController.text = task.timeTakenMinutes.toString();
+        _selectedStatus = task.status;
+        _attachments = List.from(task.attachments);
+        _resources = task.resources.isNotEmpty ? List.from(task.resources) : [ResourceUsed(id: const Uuid().v4(), name: '', quantity: 0, unit: 'pcs')];
+      });
+    }
   }
 
   @override
@@ -666,19 +688,57 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
       
-      await Future.delayed(const Duration(seconds: 1));
-      
-      if (mounted) {
-        HapticFeedback.mediumImpact();
-        Navigator.pop(context, true);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Task saved successfully ✅'),
-            backgroundColor: AppTheme.successColor,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
+      try {
+        final taskProvider = Provider.of<TaskProvider>(context, listen: false);
+        final project = Provider.of<ProjectProvider>(context, listen: false).getProjectById(widget.projectId ?? '');
+        
+        final task = Task(
+          id: widget.taskId ?? const Uuid().v4(),
+          name: _nameController.text.trim(),
+          description: _descriptionController.text.trim(),
+          date: _selectedDate,
+          createdAt: widget.taskId != null 
+              ? (taskProvider.getTaskById(widget.taskId!)?.createdAt ?? DateTime.now())
+              : DateTime.now(),
+          location: _locationController.text.trim(),
+          timeTakenMinutes: int.tryParse(_timeTakenController.text) ?? 0,
+          projectId: widget.projectId ?? '',
+          projectTitle: project?.title ?? 'No Project',
+          status: _selectedStatus,
+          attachments: _attachments,
+          resources: _resources.where((r) => r.name.isNotEmpty && r.quantity > 0).toList(),
         );
+        
+        if (widget.taskId != null) {
+          taskProvider.updateTask(task);
+        } else {
+          taskProvider.addTask(task);
+        }
+        
+        if (mounted) {
+          HapticFeedback.mediumImpact();
+          Navigator.pop(context, true);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(widget.taskId != null ? 'Task updated successfully ✅' : 'Task created successfully ✅'),
+              backgroundColor: AppTheme.successColor,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          );
+        }
+      } catch (e) {
+        setState(() => _isLoading = false);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error saving task: $e'),
+              backgroundColor: AppTheme.errorColor,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          );
+        }
       }
     }
   }
