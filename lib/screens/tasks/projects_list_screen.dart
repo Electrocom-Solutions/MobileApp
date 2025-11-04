@@ -315,8 +315,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
                         children: [
                           Text(
                             project.title,
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
@@ -437,10 +436,9 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
             ),
           ),
           const SizedBox(height: 24),
-          const Text(
+          Text(
             'No Projects Found',
             style: TextStyle(
-              color: Colors.white,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),

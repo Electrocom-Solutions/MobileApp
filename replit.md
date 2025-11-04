@@ -225,7 +225,9 @@ lib/
 - **Nov 4, 2025 (Final Update)**: User-Requested Refinements & Complete Light Theme Polish
   - **Attendance Flow**: Removed success dialog after punch-in - now directly returns to home with haptic feedback
   - **Projects Page Light Theme Fix**: 
-    - Fixed heading colors to use theme instead of hard-coded white
+    - Fixed page heading "Projects" to use theme colors instead of hard-coded white
+    - Fixed project card titles to use theme colors (black in light theme, white in dark theme)
+    - Fixed "No Projects Found" empty state text to use theme colors
     - Fixed search bar text colors for light theme visibility
     - Fixed filter chip colors to adapt properly in both dark and light themes
   - **Create Task Dropdown Fix**: Fixed dropdown text colors in light theme (was white, now uses theme colors)
