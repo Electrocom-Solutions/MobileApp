@@ -34,10 +34,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         title: const Text('Edit Profile'),
-        backgroundColor: AppTheme.backgroundColor,
       ),
       body: Form(
         key: _formKey,
@@ -141,12 +139,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     lastDate: DateTime.now(),
                     builder: (context, child) {
                       return Theme(
-                        data: ThemeData.dark().copyWith(
-                          colorScheme: const ColorScheme.dark(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: Theme.of(context).colorScheme.copyWith(
                             primary: AppTheme.primaryColor,
                             onPrimary: Colors.white,
-                            surface: AppTheme.cardColor,
-                            onSurface: AppTheme.textPrimary,
                           ),
                         ),
                         child: child!,
@@ -210,21 +206,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }) {
     return TextFormField(
       controller: controller,
-      style: const TextStyle(color: AppTheme.textPrimary),
       keyboardType: keyboardType,
       validator: validator,
       readOnly: readOnly,
       onTap: onTap,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(color: AppTheme.textSecondary),
-        filled: true,
-        fillColor: AppTheme.cardColor,
         prefixIcon: Icon(icon, color: AppTheme.primaryColor),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: AppTheme.primaryColor.withOpacity(0.3)),

@@ -77,10 +77,10 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      
       appBar: AppBar(
         title: Text(widget.taskId != null ? 'Edit Task' : 'Create Task'),
-        backgroundColor: AppTheme.backgroundColor,
+        
       ),
       body: Form(
         key: _formKey,
@@ -127,7 +127,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
     return Text(
       title,
       style: const TextStyle(
-        color: AppTheme.textPrimary,
+        
         fontSize: 18,
         fontWeight: FontWeight.bold,
       ),
@@ -137,12 +137,12 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   Widget _buildTaskNameField() {
     return TextFormField(
       controller: _nameController,
-      style: const TextStyle(color: AppTheme.textPrimary),
+      style: TextStyle(),
       decoration: InputDecoration(
         labelText: 'Task Name *',
-        labelStyle: const TextStyle(color: AppTheme.textSecondary),
+        labelStyle: TextStyle(),
         filled: true,
-        fillColor: AppTheme.cardColor,
+        
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -168,13 +168,13 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   Widget _buildDescriptionField() {
     return TextFormField(
       controller: _descriptionController,
-      style: const TextStyle(color: AppTheme.textPrimary),
+      style: TextStyle(),
       maxLines: 4,
       decoration: InputDecoration(
         labelText: 'Description',
-        labelStyle: const TextStyle(color: AppTheme.textSecondary),
+        labelStyle: TextStyle(),
         filled: true,
-        fillColor: AppTheme.cardColor,
+        
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -204,7 +204,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
               data: ThemeData.dark().copyWith(
                 colorScheme: const ColorScheme.dark(
                   primary: AppTheme.primaryColor,
-                  surface: AppTheme.cardColor,
+                  
                 ),
               ),
               child: child!,
@@ -218,7 +218,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppTheme.cardColor,
+          color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: AppTheme.primaryColor.withOpacity(0.3)),
         ),
@@ -231,12 +231,12 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
               children: [
                 const Text(
                   'Date',
-                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                  style: TextStyle( fontSize: 12),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   DateFormat('EEEE, MMMM d, y').format(_selectedDate),
-                  style: const TextStyle(color: AppTheme.textPrimary, fontSize: 16),
+                  style: const TextStyle( fontSize: 16),
                 ),
               ],
             ),
@@ -249,12 +249,12 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   Widget _buildLocationField() {
     return TextFormField(
       controller: _locationController,
-      style: const TextStyle(color: AppTheme.textPrimary),
+      style: TextStyle(),
       decoration: InputDecoration(
         labelText: 'Location',
-        labelStyle: const TextStyle(color: AppTheme.textSecondary),
+        labelStyle: TextStyle(),
         filled: true,
-        fillColor: AppTheme.cardColor,
+        
         prefixIcon: const Icon(Icons.location_on, color: AppTheme.primaryColor),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -275,19 +275,19 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   Widget _buildTimeTakenField() {
     return TextFormField(
       controller: _timeTakenController,
-      style: const TextStyle(color: AppTheme.textPrimary),
+      style: TextStyle(),
       keyboardType: TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       decoration: InputDecoration(
         labelText: 'Time Taken (minutes)',
-        labelStyle: const TextStyle(color: AppTheme.textSecondary),
+        labelStyle: TextStyle(),
         filled: true,
-        fillColor: AppTheme.cardColor,
+        
         prefixIcon: const Icon(Icons.timer, color: AppTheme.primaryColor),
         suffixText: _timeTakenController.text.isNotEmpty 
             ? '(${(int.tryParse(_timeTakenController.text) ?? 0) / 60} hrs)'
             : '',
-        suffixStyle: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+        suffixStyle: const TextStyle( fontSize: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -315,25 +315,25 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppTheme.cardColor.withOpacity(0.5),
+          color: Theme.of(context).cardTheme.color!.withOpacity(0.5),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppTheme.textSecondary.withOpacity(0.3)),
+          border: Border.all(color: Theme.of(context).dividerColor.withOpacity(0.3)),
         ),
         child: Row(
           children: [
-            const Icon(Icons.folder, color: AppTheme.textSecondary),
+            Icon(Icons.folder, color: Theme.of(context).textTheme.bodySmall?.color),
             const SizedBox(width: 12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
                   'Project (Read-only)',
-                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                  style: TextStyle( fontSize: 12),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   project?.title ?? 'No Project',
-                  style: const TextStyle(color: AppTheme.textSecondary, fontSize: 16),
+                  style: const TextStyle( fontSize: 16),
                 ),
               ],
             ),
@@ -347,9 +347,9 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
       value: _selectedProjectId,
       decoration: InputDecoration(
         labelText: 'Select Project *',
-        labelStyle: const TextStyle(color: AppTheme.textSecondary),
+        labelStyle: TextStyle(),
         filled: true,
-        fillColor: AppTheme.cardColor,
+        
         prefixIcon: const Icon(Icons.folder, color: AppTheme.primaryColor),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -364,14 +364,14 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
           borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
         ),
       ),
-      dropdownColor: AppTheme.cardColor,
-      style: const TextStyle(color: AppTheme.textPrimary),
+      
+      style: TextStyle(),
       items: projects.map((project) {
         return DropdownMenuItem<String>(
           value: project.id,
           child: Text(
             project.title,
-            style: const TextStyle(color: AppTheme.textPrimary),
+            style: TextStyle(),
           ),
         );
       }).toList(),
@@ -448,7 +448,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: AppTheme.cardColor,
+          color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: AppTheme.primaryColor.withOpacity(0.3)),
         ),
@@ -458,7 +458,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
             const SizedBox(height: 8),
             Text(
               label,
-              style: const TextStyle(color: AppTheme.textPrimary, fontSize: 12),
+              style: const TextStyle( fontSize: 12),
             ),
           ],
         ),
@@ -472,7 +472,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
       width: 100,
       margin: const EdgeInsets.only(right: 12),
       decoration: BoxDecoration(
-        color: AppTheme.cardColor,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppTheme.primaryColor.withOpacity(0.3)),
       ),
@@ -497,7 +497,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 8),
                           child: Text(
                             attachment.fileName,
-                            style: const TextStyle(color: AppTheme.textPrimary, fontSize: 10),
+                            style: const TextStyle( fontSize: 10),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             textAlign: TextAlign.center,
@@ -505,7 +505,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                         ),
                         Text(
                           attachment.fileSizeFormatted,
-                          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 9),
+                          style: const TextStyle( fontSize: 9),
                         ),
                       ],
                     ),
@@ -548,7 +548,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                 child: Text(
                   'Resource Name',
                   style: TextStyle(
-                    color: AppTheme.textSecondary,
+                    
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
@@ -560,7 +560,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                 child: Text(
                   'Qty',
                   style: TextStyle(
-                    color: AppTheme.textSecondary,
+                    
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
@@ -608,7 +608,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
               const Text(
                 'Total Resource Cost',
                 style: TextStyle(
-                  color: AppTheme.textPrimary,
+                  
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -633,7 +633,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppTheme.cardColor,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppTheme.primaryColor.withOpacity(0.2)),
       ),
@@ -643,10 +643,10 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
             flex: 3,
             child: TextFormField(
               initialValue: _resources[index].name,
-              style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+              style: const TextStyle( fontSize: 14),
               decoration: const InputDecoration(
                 hintText: 'Resource name',
-                hintStyle: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                hintStyle: TextStyle( fontSize: 14),
                 isDense: true,
                 border: InputBorder.none,
               ),
@@ -667,11 +667,11 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
             width: 60,
             child: TextFormField(
               initialValue: _resources[index].quantity > 0 ? _resources[index].quantity.toString() : '',
-              style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+              style: const TextStyle( fontSize: 14),
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
                 hintText: 'Qty',
-                hintStyle: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                hintStyle: TextStyle( fontSize: 14),
                 isDense: true,
                 border: InputBorder.none,
               ),

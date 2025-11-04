@@ -38,7 +38,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      
       body: SafeArea(
         child: Column(
           children: [
@@ -84,7 +84,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
               Text(
                 'Track and manage your projects',
                 style: TextStyle(
-                  color: AppTheme.textSecondary,
+                  
                   fontSize: 14,
                 ),
               ),
@@ -100,7 +100,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         decoration: BoxDecoration(
-          color: AppTheme.cardColor,
+          color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -119,7 +119,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
             prefixIcon: const Icon(Icons.search, color: AppTheme.primaryColor),
             suffixIcon: _searchController.text.isNotEmpty
                 ? IconButton(
-                    icon: const Icon(Icons.clear, color: AppTheme.textSecondary),
+                    icon: Icon(Icons.folder, color: Theme.of(context).iconTheme.color),
                     onPressed: () {
                       _searchController.clear();
                       Provider.of<ProjectProvider>(context, listen: false)
@@ -277,7 +277,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: AppTheme.cardColor,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -328,13 +328,13 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
                               Icon(
                                 Icons.business,
                                 size: 14,
-                                color: AppTheme.textSecondary,
+                                
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 project.clientName,
                                 style: TextStyle(
-                                  color: AppTheme.textSecondary,
+                                  
                                   fontSize: 14,
                                 ),
                               ),
@@ -365,7 +365,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
                 Text(
                   project.description,
                   style: TextStyle(
-                    color: AppTheme.textSecondary,
+                    
                     fontSize: 14,
                   ),
                   maxLines: 2,
@@ -377,13 +377,13 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
                     Icon(
                       Icons.calendar_today,
                       size: 14,
-                      color: AppTheme.textSecondary,
+                      
                     ),
                     const SizedBox(width: 4),
                     Text(
                       DateFormat('MMM dd, yyyy').format(project.startDate),
                       style: TextStyle(
-                        color: AppTheme.textSecondary,
+                        
                         fontSize: 12,
                       ),
                     ),
@@ -391,13 +391,13 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
                     Icon(
                       Icons.arrow_forward,
                       size: 14,
-                      color: AppTheme.textSecondary,
+                      
                     ),
                     const SizedBox(width: 12),
                     Icon(
                       Icons.event,
                       size: 14,
-                      color: AppTheme.textSecondary,
+                      
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -405,7 +405,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
                           ? DateFormat('MMM dd, yyyy').format(project.endDate!)
                           : 'Ongoing',
                       style: TextStyle(
-                        color: AppTheme.textSecondary,
+                        
                         fontSize: 12,
                       ),
                     ),
@@ -450,7 +450,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
           Text(
             'Try adjusting your filters',
             style: TextStyle(
-              color: AppTheme.textSecondary,
+              
               fontSize: 14,
             ),
           ),

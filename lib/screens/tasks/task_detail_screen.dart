@@ -27,7 +27,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
     if (task == null) {
       return Scaffold(
-        backgroundColor: AppTheme.backgroundColor,
+        
         body: const Center(
           child: Text(
             'Task not found',
@@ -41,10 +41,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     final bool canEdit = task.status != TaskStatus.completed;
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      
       appBar: AppBar(
         title: const Text('Task Details'),
-        backgroundColor: AppTheme.backgroundColor,
+        
         actions: [
           if (canEdit)
             IconButton(
@@ -94,7 +94,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               child: Text(
                 task.name,
                 style: const TextStyle(
-                  color: AppTheme.textPrimary,
+                  
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
@@ -122,7 +122,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         Text(
           'Created ${DateFormat('MMM dd, yyyy').format(task.createdAt)}',
           style: const TextStyle(
-            color: AppTheme.textSecondary,
+            
             fontSize: 12,
           ),
         ),
@@ -136,7 +136,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.cardColor,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppTheme.primaryColor.withOpacity(0.3)),
       ),
@@ -146,7 +146,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           const Text(
             'Change Status',
             style: TextStyle(
-              color: AppTheme.textPrimary,
+              
               fontSize: 14,
               fontWeight: FontWeight.bold,
             ),
@@ -204,7 +204,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.cardColor,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppTheme.primaryColor.withOpacity(0.2)),
       ),
@@ -214,7 +214,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           const Text(
             'Task Information',
             style: TextStyle(
-              color: AppTheme.textPrimary,
+              
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
@@ -234,7 +234,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           const Text(
             'Description',
             style: TextStyle(
-              color: AppTheme.textSecondary,
+              
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
@@ -243,7 +243,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           Text(
             task.description,
             style: const TextStyle(
-              color: AppTheme.textPrimary,
+              
               fontSize: 15,
               height: 1.5,
             ),
@@ -274,7 +274,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               Text(
                 label,
                 style: const TextStyle(
-                  color: AppTheme.textSecondary,
+                  
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                 ),
@@ -286,7 +286,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                     child: Text(
                       value,
                       style: const TextStyle(
-                        color: AppTheme.textPrimary,
+                        
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
@@ -316,7 +316,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         const Text(
           'Attachments',
           style: TextStyle(
-            color: AppTheme.textPrimary,
+            
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
@@ -326,7 +326,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           Container(
             padding: const EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: AppTheme.cardColor,
+              color: Theme.of(context).cardTheme.color,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: AppTheme.textHint.withOpacity(0.3)),
             ),
@@ -371,7 +371,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: AppTheme.cardColor,
+          color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: AppTheme.primaryColor.withOpacity(0.2)),
         ),
@@ -410,7 +410,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Text(
                       attachment.fileName,
-                      style: const TextStyle(color: AppTheme.textPrimary, fontSize: 10),
+                      style: const TextStyle( fontSize: 10),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
@@ -419,7 +419,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                   const SizedBox(height: 4),
                   Text(
                     attachment.fileSizeFormatted,
-                    style: const TextStyle(color: AppTheme.textSecondary, fontSize: 9),
+                    style: const TextStyle( fontSize: 9),
                   ),
                 ],
               ),
@@ -434,7 +434,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         const Text(
           'Resources Used',
           style: TextStyle(
-            color: AppTheme.textPrimary,
+            
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
@@ -444,7 +444,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           Container(
             padding: const EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: AppTheme.cardColor,
+              color: Theme.of(context).cardTheme.color,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: AppTheme.textHint.withOpacity(0.3)),
             ),
@@ -464,7 +464,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         else
           Container(
             decoration: BoxDecoration(
-              color: AppTheme.cardColor,
+              color: Theme.of(context).cardTheme.color,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: AppTheme.primaryColor.withOpacity(0.2)),
             ),
@@ -486,7 +486,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       const Text(
                         'Total Resource Cost',
                         style: TextStyle(
-                          color: AppTheme.textPrimary,
+                          
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                         ),
@@ -525,7 +525,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 Text(
                   resource.name,
                   style: const TextStyle(
-                    color: AppTheme.textPrimary,
+                    
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
@@ -534,7 +534,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 Text(
                   '${resource.quantity} ${resource.unit}${resource.unitCost != null ? ' × \$${resource.unitCost!.toStringAsFixed(2)}' : ''}',
                   style: const TextStyle(
-                    color: AppTheme.textSecondary,
+                    
                     fontSize: 12,
                   ),
                 ),
@@ -545,7 +545,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             Text(
               '\$${resource.totalCost.toStringAsFixed(2)}',
               style: const TextStyle(
-                color: AppTheme.textPrimary,
+                
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),

@@ -26,7 +26,7 @@ class ProjectDetailScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      
       body: CustomScrollView(
         slivers: [
           // Project Header
@@ -91,7 +91,7 @@ class ProjectDetailScreen extends StatelessWidget {
                         Text(
                           project.clientName,
                           style: TextStyle(
-                            color: AppTheme.textSecondary,
+                            
                             fontSize: 14,
                           ),
                         ),
@@ -170,7 +170,7 @@ class ProjectDetailScreen extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: AppTheme.cardColor,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -230,7 +230,7 @@ class ProjectDetailScreen extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   task.description,
-                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+                  style: TextStyle( fontSize: 13),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -241,14 +241,14 @@ class ProjectDetailScreen extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       DateFormat('MMM dd, yyyy').format(task.date),
-                      style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                      style: TextStyle( fontSize: 12),
                     ),
                     const SizedBox(width: 16),
                     Icon(Icons.timer, size: 14, color: AppTheme.textSecondary),
                     const SizedBox(width: 4),
                     Text(
                       task.timeTakenFormatted,
-                      style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                      style: TextStyle( fontSize: 12),
                     ),
                   ],
                 ),

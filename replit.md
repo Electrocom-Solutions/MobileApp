@@ -221,7 +221,7 @@ lib/
 
 ## Recent Changes
 
-- **Nov 4, 2025 (Evening)**: Complete Feature Implementation & UI/UX Polish
+- **Nov 4, 2025 (Evening)**: Complete Feature Implementation & UI/UX Polish + Theme-Aware Color System
   - **Project Detail Screen**: Removed section tabs and floating button - shows only header and task list
   - **Task Detail Screen**: Removed (+Add) and trash icons from view mode (only in edit mode)
   - **Create/Edit Task**: Added column headers (Resource Name, Qty) in resources section
@@ -230,6 +230,13 @@ lib/
   - **Profile Screen**: Added Edit Profile functionality with all editable fields
   - **Theme Provider**: Created ThemeProvider for theme state management with SharedPreferences persistence
   - **Light Theme**: Designed and implemented complete light theme with proper colors and contrasts
+  - **Theme-Aware Colors**: Updated ALL screens to use Theme.of(context) instead of hard-coded AppTheme colors
+    - Home/Dashboard screen
+    - All Task screens (Projects List, Project Detail, Create Task, Task Detail, Tasks List)
+    - All Attendance screens (Attendance, Camera Capture, Location Confirmation)
+    - Notifications screen
+    - Profile and Edit Profile screens
+    - Login screen
   - **Bug Fix**: Fixed exhaustive switch statement for TaskStatus enum (added missing toDo, pendingApproval, rejected cases)
   - **Dependencies**: Added shared_preferences ^2.3.3 to pubspec.yaml for theme persistence
   

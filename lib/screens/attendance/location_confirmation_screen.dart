@@ -23,10 +23,10 @@ class LocationConfirmationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      
       appBar: AppBar(
         title: const Text('Confirm Attendance'),
-        backgroundColor: AppTheme.backgroundColor,
+        
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
@@ -68,7 +68,7 @@ class LocationConfirmationScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppTheme.cardColor,
+                color: Theme.of(context).cardTheme.color,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: AppTheme.primaryColor.withOpacity(0.2),
@@ -82,7 +82,7 @@ class LocationConfirmationScreen extends StatelessWidget {
                     'Attendance Details',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: AppTheme.textPrimary,
+                          
                         ),
                   ),
                   const SizedBox(height: 20),
@@ -146,7 +146,7 @@ class LocationConfirmationScreen extends StatelessWidget {
                     child: Text(
                       'Please verify your details before confirming',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppTheme.textSecondary,
+                            
                           ),
                     ),
                   ),
@@ -172,7 +172,7 @@ class LocationConfirmationScreen extends StatelessWidget {
                     child: const Text(
                       'Retake',
                       style: TextStyle(
-                        color: AppTheme.textPrimary,
+                        
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
@@ -233,7 +233,7 @@ class LocationConfirmationScreen extends StatelessWidget {
               Text(
                 label,
                 style: const TextStyle(
-                  color: AppTheme.textSecondary,
+                  
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
                 ),
@@ -242,7 +242,7 @@ class LocationConfirmationScreen extends StatelessWidget {
               Text(
                 value,
                 style: const TextStyle(
-                  color: AppTheme.textPrimary,
+                  
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -337,7 +337,7 @@ class _SuccessDialogState extends State<_SuccessDialog> with SingleTickerProvide
                 end: Alignment.bottomRight,
                 colors: [
                   AppTheme.cardColor,
-                  AppTheme.cardColor.withOpacity(0.95),
+                  Theme.of(context).cardTheme.color!.withOpacity(0.95),
                 ],
               ),
               borderRadius: BorderRadius.circular(24),
@@ -391,7 +391,7 @@ class _SuccessDialogState extends State<_SuccessDialog> with SingleTickerProvide
                 const Text(
                   'Success!',
                   style: TextStyle(
-                    color: AppTheme.textPrimary,
+                    
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 0.5,
@@ -412,7 +412,7 @@ class _SuccessDialogState extends State<_SuccessDialog> with SingleTickerProvide
                 Text(
                   'You have been marked present for today',
                   style: TextStyle(
-                    color: AppTheme.textSecondary,
+                    
                     fontSize: 13,
                   ),
                   textAlign: TextAlign.center,

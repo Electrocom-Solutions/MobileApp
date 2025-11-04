@@ -101,9 +101,10 @@ class _NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cardColor = Theme.of(context).cardTheme.color ?? Theme.of(context).cardColor;
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      color: isRead ? AppTheme.cardColor : AppTheme.cardColor.withOpacity(0.8),
+      color: isRead ? cardColor : cardColor.withOpacity(0.95),
       child: InkWell(
         onTap: () {},
         borderRadius: BorderRadius.circular(16),
@@ -163,10 +164,10 @@ class _NotificationCard extends StatelessWidget {
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.access_time,
                           size: 14,
-                          color: AppTheme.textHint,
+                          color: Theme.of(context).textTheme.bodySmall?.color,
                         ),
                         const SizedBox(width: 4),
                         Text(

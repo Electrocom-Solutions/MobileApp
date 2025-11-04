@@ -91,7 +91,7 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
           child: Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppTheme.cardColor,
+              color: Theme.of(context).cardTheme.color,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
@@ -205,7 +205,7 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      
       body: SafeArea(
         child: Column(
           children: [
@@ -238,7 +238,7 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
               child: Text(
                 'Position your face in the center circle',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppTheme.textSecondary,
+                      
                     ),
                 textAlign: TextAlign.center,
               ),
@@ -276,7 +276,7 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
                         height: 300,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AppTheme.cardColor,
+                          color: Theme.of(context).cardTheme.color,
                           border: Border.all(
                             color: AppTheme.primaryColor.withOpacity(0.3),
                             width: 4,
@@ -304,7 +304,7 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
                     onPressed: _toggleFlash,
                     icon: Icon(
                       _isFlashOn ? Icons.flash_on : Icons.flash_off,
-                      color: AppTheme.textPrimary,
+                      
                       size: 30,
                     ),
                   ),

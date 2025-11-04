@@ -49,15 +49,14 @@ class _AttendanceScreenState extends State<AttendanceScreen> with SingleTickerPr
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      
       appBar: AppBar(
         title: const Text('Attendance'),
-        backgroundColor: AppTheme.backgroundColor,
+        
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: AppTheme.primaryColor,
           labelColor: AppTheme.primaryColor,
-          unselectedLabelColor: AppTheme.textSecondary,
           tabs: const [
             Tab(text: 'Calendar View'),
             Tab(text: 'List View'),
@@ -81,7 +80,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> with SingleTickerPr
         children: [
           Container(
             decoration: BoxDecoration(
-              color: AppTheme.cardColor,
+              color: Theme.of(context).cardTheme.color,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: AppTheme.primaryColor.withOpacity(0.2),
@@ -119,14 +118,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> with SingleTickerPr
                   shape: BoxShape.circle,
                 ),
                 outsideDaysVisible: false,
-                defaultTextStyle: const TextStyle(color: AppTheme.textPrimary),
-                weekendTextStyle: const TextStyle(color: AppTheme.textSecondary),
-                todayTextStyle: const TextStyle(color: AppTheme.textPrimary),
                 selectedTextStyle: const TextStyle(color: Colors.white),
               ),
               headerStyle: HeaderStyle(
                 titleTextStyle: const TextStyle(
-                  color: AppTheme.textPrimary,
+                  
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -135,10 +131,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> with SingleTickerPr
                 rightChevronIcon: const Icon(Icons.chevron_right, color: AppTheme.primaryColor),
                 titleCentered: true,
               ),
-              daysOfWeekStyle: const DaysOfWeekStyle(
-                weekdayStyle: TextStyle(color: AppTheme.textSecondary),
-                weekendStyle: TextStyle(color: AppTheme.textSecondary),
-              ),
+              daysOfWeekStyle: const DaysOfWeekStyle(),
               calendarBuilders: CalendarBuilders(
                 defaultBuilder: (context, day, focusedDay) {
                   final status = _getStatusForDay(day);
@@ -187,7 +180,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> with SingleTickerPr
         child: Text(
           '${day.day}',
           style: TextStyle(
-            color: AppTheme.textPrimary,
+            
             fontWeight: status != AttendanceStatus.none ? FontWeight.bold : FontWeight.normal,
           ),
         ),
@@ -199,7 +192,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> with SingleTickerPr
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.cardColor,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -229,7 +222,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> with SingleTickerPr
         Text(
           label,
           style: const TextStyle(
-            color: AppTheme.textSecondary,
+            
             fontSize: 12,
           ),
         ),
@@ -295,7 +288,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> with SingleTickerPr
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.cardColor,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: record.statusColor.withOpacity(0.3),
@@ -346,7 +339,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> with SingleTickerPr
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: AppTheme.textPrimary,
+                        
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -378,7 +371,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> with SingleTickerPr
                           record.checkIn!,
                           style: const TextStyle(
                             fontSize: 13,
-                            color: AppTheme.textSecondary,
+                            
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -390,7 +383,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> with SingleTickerPr
                           record.checkOut!,
                           style: const TextStyle(
                             fontSize: 13,
-                            color: AppTheme.textSecondary,
+                            
                           ),
                         ),
                       ],
@@ -406,7 +399,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> with SingleTickerPr
                         'Total: ${record.totalHours}',
                         style: const TextStyle(
                           fontSize: 12,
-                          color: AppTheme.textSecondary,
+                          
                         ),
                       ),
                     ],
@@ -468,7 +461,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> with SingleTickerPr
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
+                
               ),
             ),
             const SizedBox(height: 20),
@@ -498,7 +491,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> with SingleTickerPr
         Text(
           label,
           style: const TextStyle(
-            color: AppTheme.textSecondary,
+            
             fontSize: 14,
           ),
         ),
@@ -506,7 +499,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> with SingleTickerPr
         Text(
           value,
           style: const TextStyle(
-            color: AppTheme.textPrimary,
+            
             fontSize: 14,
             fontWeight: FontWeight.bold,
           ),

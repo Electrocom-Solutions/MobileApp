@@ -259,7 +259,7 @@ class _AttendanceScreenFullState extends State<AttendanceScreenFull> {
         Text(
           label,
           style: TextStyle(
-            color: AppTheme.textSecondary,
+            
             fontSize: 12,
           ),
         ),
@@ -319,7 +319,7 @@ class _AttendanceScreenFullState extends State<AttendanceScreenFull> {
         Text(
           label,
           style: TextStyle(
-            color: AppTheme.textSecondary,
+            
             fontSize: 12,
           ),
         ),
@@ -346,13 +346,13 @@ class _AttendanceScreenFullState extends State<AttendanceScreenFull> {
                 Icon(
                   Icons.calendar_today,
                   size: 64,
-                  color: AppTheme.textSecondary,
+                  
                 ),
                 const SizedBox(height: 16),
                 Text(
                   'No attendance records found',
                   style: TextStyle(
-                    color: AppTheme.textSecondary,
+                    
                     fontSize: 16,
                   ),
                 ),
@@ -478,7 +478,7 @@ class _AttendanceScreenFullState extends State<AttendanceScreenFull> {
                 Icon(
                   Icons.login,
                   size: 16,
-                  color: AppTheme.textSecondary,
+                  
                 ),
                 const SizedBox(width: 4),
                 Text(
@@ -489,7 +489,7 @@ class _AttendanceScreenFullState extends State<AttendanceScreenFull> {
                 Icon(
                   Icons.logout,
                   size: 16,
-                  color: AppTheme.textSecondary,
+                  
                 ),
                 const SizedBox(width: 4),
                 Text(
@@ -504,7 +504,7 @@ class _AttendanceScreenFullState extends State<AttendanceScreenFull> {
                 Icon(
                   Icons.timer,
                   size: 16,
-                  color: AppTheme.textSecondary,
+                  
                 ),
                 const SizedBox(width: 4),
                 Text(
@@ -586,7 +586,7 @@ class _AttendanceScreenFullState extends State<AttendanceScreenFull> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: AppTheme.textSecondary,
+                    
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -627,7 +627,7 @@ class _AttendanceScreenFullState extends State<AttendanceScreenFull> {
                           Text(
                             'Punch In Selfie',
                             style: TextStyle(
-                              color: AppTheme.textSecondary,
+                              
                               fontSize: 12,
                             ),
                           ),
@@ -661,7 +661,7 @@ class _AttendanceScreenFullState extends State<AttendanceScreenFull> {
                           Text(
                             'Punch Out Selfie',
                             style: TextStyle(
-                              color: AppTheme.textSecondary,
+                              
                               fontSize: 12,
                             ),
                           ),
@@ -707,7 +707,7 @@ class _AttendanceScreenFullState extends State<AttendanceScreenFull> {
             child: Text(
               label,
               style: TextStyle(
-                color: AppTheme.textSecondary,
+                
                 fontSize: 14,
               ),
             ),

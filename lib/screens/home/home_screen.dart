@@ -55,7 +55,6 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.cardColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('Punch Out'),
         content: const Text('Are you sure you want to punch out?'),
@@ -90,7 +89,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -122,21 +120,18 @@ class _HomeScreenState extends State<HomeScreen> {
           '${_getGreeting()}, $userName 👋',
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
               ),
         ),
         const SizedBox(height: 4),
         Text(
           _getCurrentDate(),
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppTheme.textSecondary,
-              ),
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: AppTheme.cardColor,
+            color: Theme.of(context).cardTheme.color,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: isPunchedIn
@@ -156,9 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(width: 8),
               Text(
                 _getStatusSummary(),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppTheme.textSecondary,
-                    ),
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
           ),
@@ -168,6 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildHeroPunchCard() {
+    final cardColor = Theme.of(context).cardTheme.color ?? Theme.of(context).cardColor;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -176,11 +170,11 @@ class _HomeScreenState extends State<HomeScreen> {
           colors: isPunchedIn
               ? [
                   AppTheme.successColor.withOpacity(0.15),
-                  AppTheme.cardColor,
+                  cardColor,
                 ]
               : [
                   AppTheme.primaryColor.withOpacity(0.15),
-                  AppTheme.cardColor,
+                  cardColor,
                 ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -243,9 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       isPunchedIn && punchInTime != null
                           ? 'Started at $punchInTime'
                           : 'Tap below to mark your attendance',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppTheme.textSecondary,
-                          ),
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
                 ),
@@ -324,7 +316,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.cardColor,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: accentColor.withOpacity(0.2),
@@ -355,7 +347,6 @@ class _HomeScreenState extends State<HomeScreen> {
             label,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppTheme.textSecondary,
                   height: 1.2,
                 ),
           ),
@@ -455,7 +446,6 @@ class _HomeScreenState extends State<HomeScreen> {
           'Recent Activity',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
               ),
         ),
         const SizedBox(height: 12),
@@ -486,10 +476,10 @@ class _HomeScreenState extends State<HomeScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppTheme.cardColor,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppTheme.surfaceColor,
+          color: Theme.of(context).dividerColor.withOpacity(0.1),
           width: 1,
         ),
       ),
@@ -513,15 +503,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   title,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w500,
-                        color: AppTheme.textPrimary,
                       ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   time,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppTheme.textSecondary,
-                      ),
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
             ),

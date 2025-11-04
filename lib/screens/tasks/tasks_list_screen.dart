@@ -39,7 +39,7 @@ class _TasksListScreenState extends State<TasksListScreen> with SingleTickerProv
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      
       body: SafeArea(
         child: Column(
           children: [
@@ -96,7 +96,7 @@ class _TasksListScreenState extends State<TasksListScreen> with SingleTickerProv
               Text(
                 'Manage your daily tasks',
                 style: TextStyle(
-                  color: AppTheme.textSecondary,
+                  
                   fontSize: 14,
                 ),
               ),
@@ -112,7 +112,7 @@ class _TasksListScreenState extends State<TasksListScreen> with SingleTickerProv
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         decoration: BoxDecoration(
-          color: AppTheme.cardColor,
+          color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -131,7 +131,7 @@ class _TasksListScreenState extends State<TasksListScreen> with SingleTickerProv
             prefixIcon: const Icon(Icons.search, color: AppTheme.primaryColor),
             suffixIcon: _searchController.text.isNotEmpty
                 ? IconButton(
-                    icon: const Icon(Icons.clear, color: AppTheme.textSecondary),
+                    icon: Icon(Icons.folder, color: Theme.of(context).iconTheme.color),
                     onPressed: () {
                       _searchController.clear();
                       Provider.of<TaskProvider>(context, listen: false)
@@ -272,7 +272,7 @@ class _TasksListScreenState extends State<TasksListScreen> with SingleTickerProv
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: AppTheme.cardColor,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -304,7 +304,7 @@ class _TasksListScreenState extends State<TasksListScreen> with SingleTickerProv
                     Text(
                       DateFormat('MMM dd, yyyy').format(task.createdAt),
                       style: TextStyle(
-                        color: AppTheme.textSecondary,
+                        
                         fontSize: 12,
                       ),
                     ),
@@ -349,7 +349,7 @@ class _TasksListScreenState extends State<TasksListScreen> with SingleTickerProv
                 Text(
                   task.description,
                   style: TextStyle(
-                    color: AppTheme.textSecondary,
+                    
                     fontSize: 14,
                   ),
                   maxLines: 2,
@@ -362,7 +362,7 @@ class _TasksListScreenState extends State<TasksListScreen> with SingleTickerProv
                     const SizedBox(width: 4),
                     Text(
                       task.timeTakenFormatted,
-                      style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                      style: TextStyle( fontSize: 12),
                     ),
                     const SizedBox(width: 16),
                     if (task.resources.isNotEmpty) ...[
@@ -370,7 +370,7 @@ class _TasksListScreenState extends State<TasksListScreen> with SingleTickerProv
                       const SizedBox(width: 4),
                       Text(
                         '₹${task.totalResourceCost.toStringAsFixed(2)}',
-                        style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                        style: TextStyle( fontSize: 12),
                       ),
                     ],
                   ],
@@ -414,7 +414,7 @@ class _TasksListScreenState extends State<TasksListScreen> with SingleTickerProv
           Text(
             'Create your first task to get started',
             style: TextStyle(
-              color: AppTheme.textSecondary,
+              
               fontSize: 14,
             ),
           ),
