@@ -347,9 +347,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
       value: _selectedProjectId,
       decoration: InputDecoration(
         labelText: 'Select Project *',
-        labelStyle: TextStyle(),
         filled: true,
-        
         prefixIcon: const Icon(Icons.folder, color: AppTheme.primaryColor),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -364,14 +362,14 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
           borderSide: const BorderSide(color: AppTheme.primaryColor, width: 2),
         ),
       ),
-      
-      style: TextStyle(),
+      dropdownColor: Theme.of(context).cardTheme.color,
+      style: Theme.of(context).textTheme.bodyLarge,
       items: projects.map((project) {
         return DropdownMenuItem<String>(
           value: project.id,
           child: Text(
             project.title,
-            style: TextStyle(),
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
         );
       }).toList(),

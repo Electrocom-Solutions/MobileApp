@@ -70,13 +70,12 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
             ),
           ),
           const SizedBox(width: 16),
-          const Column(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Projects',
                 style: TextStyle(
-                  color: Colors.white,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
@@ -84,7 +83,6 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
               Text(
                 'Track and manage your projects',
                 style: TextStyle(
-                  
                   fontSize: 14,
                 ),
               ),
@@ -112,10 +110,8 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
         ),
         child: TextField(
           controller: _searchController,
-          style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
             hintText: 'Search projects or clients...',
-            hintStyle: TextStyle(color: AppTheme.textSecondary),
             prefixIcon: const Icon(Icons.search, color: AppTheme.primaryColor),
             suffixIcon: _searchController.text.isNotEmpty
                 ? IconButton(
@@ -204,6 +200,9 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
   }
 
   Widget _buildFilterChip(String label, bool isSelected, VoidCallback onTap) {
+    final cardColor = Theme.of(context).cardTheme.color ?? Theme.of(context).cardColor;
+    final unselectedTextColor = Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey;
+    
     return Padding(
       padding: const EdgeInsets.only(right: 12),
       child: GestureDetector(
@@ -212,7 +211,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? AppTheme.primaryColor : AppTheme.cardColor,
+            color: isSelected ? AppTheme.primaryColor : cardColor,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSelected ? AppTheme.primaryColor : Colors.transparent,
@@ -222,7 +221,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> with SingleTick
           child: Text(
             label,
             style: TextStyle(
-              color: isSelected ? Colors.white : AppTheme.textSecondary,
+              color: isSelected ? Colors.white : unselectedTextColor,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
           ),
